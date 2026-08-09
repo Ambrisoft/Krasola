@@ -1,0 +1,102 @@
+// Theme presets for the Krasola dashboard UI
+
+export const THEMES = [
+  {
+    id: 'slate-dark',
+    name: 'Midnight Dark',
+    isDark: true,
+    bg: 'bg-slate-950',
+    sidebar: 'bg-slate-900 border-slate-800',
+    text: 'text-slate-100',
+    textMuted: 'text-slate-400',
+    border: 'border-slate-800',
+    card: 'bg-slate-900/50 border-slate-800',
+    accent: 'bg-indigo-600 hover:bg-indigo-500 text-white',
+    accentText: 'text-indigo-400',
+    glow: 'bg-indigo-500/10'
+  },
+  {
+    id: 'slate-light',
+    name: 'Snowy Light',
+    isDark: false,
+    bg: 'bg-slate-50',
+    sidebar: 'bg-white border-slate-200',
+    text: 'text-slate-900',
+    textMuted: 'text-slate-500',
+    border: 'border-slate-200',
+    card: 'bg-white border-slate-200 shadow-sm',
+    accent: 'bg-indigo-600 hover:bg-indigo-500 text-white',
+    accentText: 'text-indigo-600',
+    glow: 'bg-indigo-500/5'
+  },
+  {
+    id: 'nord',
+    name: 'Nordic Frost',
+    isDark: true,
+    bg: 'bg-[#2e3440]',
+    sidebar: 'bg-[#3b4252] border-[#434c5e]',
+    text: 'text-[#eceff4]',
+    textMuted: 'text-[#d8dee9]',
+    border: 'border-[#434c5e]',
+    card: 'bg-[#3b4252]/60 border-[#4c566a]',
+    accent: 'bg-[#88c0d0] hover:bg-[#8fbcbb] text-[#2e3440]',
+    accentText: 'text-[#88c0d0]',
+    glow: 'bg-[#88c0d0]/10'
+  },
+  {
+    id: 'dracula',
+    name: 'Dracula Castle',
+    isDark: true,
+    bg: 'bg-[#282a36]',
+    sidebar: 'bg-[#1e1f29] border-[#44475a]',
+    text: 'text-[#f8f8f2]',
+    textMuted: 'text-[#6272a4]',
+    border: 'border-[#44475a]',
+    card: 'bg-[#1e1f29]/60 border-[#44475a]',
+    accent: 'bg-[#bd93f9] hover:bg-[#ff79c6] text-slate-950',
+    accentText: 'text-[#bd93f9]',
+    glow: 'bg-[#bd93f9]/10'
+  },
+  {
+    id: 'gruvbox',
+    name: 'Gruvbox Retro',
+    isDark: true,
+    bg: 'bg-[#282828]',
+    sidebar: 'bg-[#3c3836] border-[#504945]',
+    text: 'text-[#ebdbb2]',
+    textMuted: 'text-[#a89984]',
+    border: 'border-[#504945]',
+    card: 'bg-[#3c3836]/60 border-[#504945]',
+    accent: 'bg-[#d79921] hover:bg-[#b8bb26] text-[#282828]',
+    accentText: 'text-[#d79921]',
+    glow: 'bg-[#d79921]/10'
+  },
+  {
+    id: 'solarized-light',
+    name: 'Solarized Warm',
+    isDark: false,
+    bg: 'bg-[#fdf6e3]',
+    sidebar: 'bg-[#eee8d5] border-[#93a1a1]/30',
+    text: 'text-[#586e75]',
+    textMuted: 'text-[#93a1a1]',
+    border: 'border-[#93a1a1]/30',
+    card: 'bg-[#eee8d5]/50 border-[#93a1a1]/30',
+    accent: 'bg-[#268bd2] hover:bg-[#2aa198] text-white',
+    accentText: 'text-[#268bd2]',
+    glow: 'bg-[#268bd2]/5'
+  },
+  {
+    id: 'cyberpunk',
+    name: 'Cyberpunk Neon',
+    isDark: true,
+    bg: 'bg-[#0d0221]',
+    sidebar: 'bg-[#0f082c] border-[#ff79c6]/20',
+    text: 'text-[#a5ffd6]',
+    textMuted: 'text-[#00b4d8]',
+    border: 'border-[#ff79c6]/20',
+    card: 'bg-[#0f082c]/60 border-[#ff79c6]/20',
+    accent: 'bg-[#ff79c6] hover:bg-[#bd93f9] text-[#0d0221]',
+    accentText: 'text-[#ff79c6]',
+    glow: 'bg-[#ff79c6]/10'
+  }
+];
