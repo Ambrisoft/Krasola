@@ -1,38 +1,50 @@
-import React, { useState } from 'react';
-import { Search, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Zap, Globe, Shield, Heart } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { fetchPlatformPalettes, fetchCommunityPalettes } from '../../utils/supabaseClient';
 
 export default function PaletteExplorer({ onLoadPalette, showToast }) {
   const { theme } = useTheme();
+
+  const [activeTab, setActiveTab] = useState('platform'); // 'platform' or 'community'
+  const [platformPalettes, setPlatformPalettes] = useState([]);
+  const [communityPalettes, setCommunityPalettes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Curated trending library (20+ presets)
-  const presetPalettes = [
-    { name: "Sunset Horizon", tags: ["warm", "retro"], colors: ["#ff5e62", "#ff9966", "#ff5f6d", "#ffc3a0", "#ffafbd"] },
-    { name: "Nordic Frost", tags: ["cool", "minimalist"], colors: ["#2e3440", "#3b4252", "#434c5e", "#4c566a", "#88c0d0"] },
-    { name: "Cyberpunk Glow", tags: ["neon"], colors: ["#0d0221", "#0f082c", "#ff79c6", "#bd93f9", "#8be9fd"] },
-    { name: "Muted Forest", tags: ["cool", "minimalist"], colors: ["#2d4a22", "#537a4a", "#88a381", "#ccd5ae", "#e9edc9"] },
-    { name: "Vintage Cafe", tags: ["retro", "warm"], colors: ["#6f4e37", "#a0522d", "#cd853f", "#deb887", "#f5f5dc"] },
-    { name: "Neon Vibes", tags: ["neon"], colors: ["#ff007f", "#7f00ff", "#00ffff", "#ff00ff", "#00ff00"] },
-    { name: "Pastel Dreams", tags: ["pastel"], colors: ["#ffb7b2", "#ffdac1", "#e2f0cb", "#b5ead7", "#c7ceea"] },
-    { name: "Desert Sand", tags: ["warm", "minimalist"], colors: ["#e07a5f", "#f4f1de", "#f2cc8f", "#81b29a", "#3d405b"] },
-    { name: "Sherbet Swirl", tags: ["pastel", "warm"], colors: ["#f72585", "#7209b7", "#3f37c9", "#4cc9f0", "#4895ef"] },
-    { name: "Ocean Deep", tags: ["cool"], colors: ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8"] },
-    { name: "Lavender Fields", tags: ["pastel", "cool"], colors: ["#e8dbfc", "#f1e9fc", "#ded2f9", "#c3bef7", "#8a85e5"] },
-    { name: "Retro Sunset", tags: ["retro", "warm"], colors: ["#e63946", "#f1faee", "#a8dadc", "#457b9d", "#1d3557"] },
-    { name: "Emerald Luxe", tags: ["cool", "minimalist"], colors: ["#064e3b", "#047857", "#10b981", "#34d399", "#a7f3d0"] },
-    { name: "Midnight OLED", tags: ["dark", "minimalist"], colors: ["#020617", "#0f172a", "#1e293b", "#334155", "#64748b"] },
-    { name: "Golden Amber", tags: ["warm"], colors: ["#451a03", "#78350f", "#b45309", "#d97706", "#f59e0b"] },
-    { name: "Rose Velvet", tags: ["pastel", "warm"], colors: ["#881337", "#9f1239", "#be123c", "#e11d48", "#f43f5e"] },
-    { name: "Solarized Dark", tags: ["dark", "cool"], colors: ["#002b36", "#073642", "#586e75", "#657b83", "#2aa198"] },
-    { name: "Tokyo Neon Night", tags: ["neon"], colors: ["#18022b", "#30084f", "#e000ff", "#00e5ff", "#ffe600"] }
-  ];
+  // Fetch libraries
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const presets = await fetchPlatformPalettes();
+        const community = await fetchCommunityPalettes();
+        
+        const normalizedPresets = presets.map(p => ({
+          ...p,
+          tags: p.tags || [p.mode?.toLowerCase() || 'cool']
+        }));
+        const normalizedCommunity = community.map(c => ({
+          ...c,
+          tags: c.tags || [c.mode?.toLowerCase() || 'warm']
+        }));
+        setPlatformPalettes(normalizedPresets);
+        setCommunityPalettes(normalizedCommunity);
+      } catch (err) {
+        console.error("Failed to load palettes:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [activeTab]);
 
+  const activePalettesList = activeTab === 'platform' ? platformPalettes : communityPalettes;
   const tags = ["all", "warm", "cool", "pastel", "neon", "retro", "minimalist", "dark"];
 
-  const filteredPalettes = presetPalettes.filter(palette => {
-    const matchesTag = selectedTag === 'all' || palette.tags.includes(selectedTag);
+  const filteredPalettes = activePalettesList.filter(palette => {
+    const matchesTag = selectedTag === 'all' || (palette.tags && palette.tags.includes(selectedTag));
     const matchesSearch = palette.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           palette.colors.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesTag && matchesSearch;
@@ -40,10 +52,36 @@ export default function PaletteExplorer({ onLoadPalette, showToast }) {
 
   return (
     <div className="space-y-6">
-      {/* Sub header */}
-      <div>
-        <h3 className="text-lg font-bold tracking-tight">Explore Palettes</h3>
-        <p className={`text-xs ${theme.textMuted}`}>Browse and import curated trending templates from color libraries.</p>
+      {/* Sub header with tab control */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-bold tracking-tight">Explore Palettes Hub</h3>
+          <p className={`text-xs ${theme.textMuted}`}>Browse and import curated trending templates from color libraries.</p>
+        </div>
+
+        {/* Double Tab Switcher */}
+        <div className="inline-flex p-1 rounded-xl bg-slate-900/60 border border-slate-800 self-start">
+          <button
+            onClick={() => setActiveTab('platform')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'platform'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Shield size={12} /> Krasola Presets
+          </button>
+          <button
+            onClick={() => setActiveTab('community')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'community'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Globe size={12} /> Community creations
+          </button>
+        </div>
       </div>
 
       {/* Explorer Controls Bar */}
@@ -74,7 +112,7 @@ export default function PaletteExplorer({ onLoadPalette, showToast }) {
                 selectedTag === tag
                   ? theme.accent
                   : theme.isDark
-                    ? 'bg-slate-800 hover:bg-slate-750 text-slate-300'
+                    ? 'bg-slate-800 hover:bg-slate-755 text-slate-300'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
               }`}
             >
@@ -84,56 +122,80 @@ export default function PaletteExplorer({ onLoadPalette, showToast }) {
         </div>
       </div>
 
-      {/* Grid of cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredPalettes.map((palette, idx) => (
-          <div
-            key={idx}
-            className={`rounded-2xl border p-4 space-y-4 backdrop-blur-xl transition-all duration-300 group hover:border-indigo-500/40 hover:-translate-y-1 ${theme.card}`}
-          >
-            {/* Header info */}
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="text-sm font-bold">{palette.name}</h4>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {palette.tags.map(t => (
-                    <span key={t} className="text-[8px] font-extrabold tracking-wider uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400">
-                      {t}
+      {/* Loading state */}
+      {loading ? (
+        <div className="py-12 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500" />
+        </div>
+      ) : (
+        /* Grid of cards */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPalettes.map((palette, idx) => (
+            <div
+              key={palette.id || idx}
+              className={`rounded-2xl border p-4 space-y-4 backdrop-blur-xl transition-all duration-300 group hover:border-indigo-500/40 hover:-translate-y-1 ${theme.card}`}
+            >
+              {/* Header info */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="text-sm font-bold">{palette.name}</h4>
+                  <div className="flex flex-wrap gap-1 mt-1 items-center">
+                    {palette.tags && palette.tags.map(t => (
+                      <span key={t} className="text-[8px] font-extrabold tracking-wider uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400">
+                        {t}
+                      </span>
+                    ))}
+                    {activeTab === 'community' && (
+                      <span className="text-[9px] font-medium text-slate-400 ml-1">
+                        by {palette.username || 'Anonymous'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {activeTab === 'community' && (
+                    <span className="text-[9px] text-slate-400 font-bold flex items-center gap-0.5 mr-2">
+                      <Heart size={10} className="text-red-500 fill-red-500" /> {palette.likes || 0}
                     </span>
-                  ))}
+                  )}
+                  <button
+                    onClick={() => onLoadPalette(palette.colors)}
+                    className="opacity-0 group-hover:opacity-100 py-1 px-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold rounded-lg flex items-center gap-1 transition-all"
+                    title="Load into active workspace"
+                  >
+                    <Zap size={10} /> Load
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => onLoadPalette(palette.colors)}
-                className="opacity-0 group-hover:opacity-100 py-1 px-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold rounded-lg flex items-center gap-1 transition-all"
-                title="Load into active workspace"
-              >
-                <Zap size={10} /> Load
-              </button>
-            </div>
 
-            {/* Colors render strip */}
-            <div className="flex h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
-              {palette.colors.map((color, cIdx) => (
-                <div
-                  key={cIdx}
-                  style={{ backgroundColor: color }}
-                  className="flex-1 hover:scale-105 transition-transform cursor-pointer relative group/swatch flex items-center justify-center"
-                  title={`Click to copy HEX: ${color}`}
-                  onClick={() => {
-                    navigator.clipboard.writeText(color);
-                    if (showToast) showToast(`Copied HEX ${color.toUpperCase()}`);
-                  }}
-                >
-                  <span className="opacity-0 group-hover/swatch:opacity-100 text-[8px] font-black text-white bg-slate-900/60 px-1 py-0.5 rounded pointer-events-none drop-shadow">
-                    📋
-                  </span>
-                </div>
-              ))}
+              {/* Colors render strip */}
+              <div className="flex h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
+                {palette.colors.map((color, cIdx) => (
+                  <div
+                    key={cIdx}
+                    style={{ backgroundColor: color }}
+                    className="flex-1 hover:scale-105 transition-transform cursor-pointer relative group/swatch flex items-center justify-center"
+                    title={`Click to copy HEX: ${color}`}
+                    onClick={() => {
+                      navigator.clipboard.writeText(color);
+                      if (showToast) showToast(`Copied HEX ${color.toUpperCase()}`);
+                    }}
+                  >
+                    <span className="opacity-0 group-hover/swatch:opacity-100 text-[8px] font-black text-white bg-slate-900/60 px-1 py-0.5 rounded pointer-events-none drop-shadow">
+                      📋
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+          {filteredPalettes.length === 0 && (
+            <div className="col-span-full py-12 text-center text-xs text-slate-400 italic">
+              No palettes found matching the search criteria.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

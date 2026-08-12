@@ -20,6 +20,7 @@ import PaletteExplorer from './palette/PaletteExplorer';
 import PaletteExtractor from './palette/PaletteExtractor';
 import PaletteAccessibility from './palette/PaletteAccessibility';
 import PaletteVisualizer from './palette/PaletteVisualizer';
+import { saveCommunityPalette } from '../utils/supabaseClient';
 
 export default function PaletteLab({ activePalette, setActivePalette, onSavePalette, enableShortcuts = true }) {
   const { theme } = useTheme();
@@ -53,14 +54,31 @@ export default function PaletteLab({ activePalette, setActivePalette, onSavePale
   };
 
   // Save palette dialog
-  const handleSave = () => {
+  const handleSave = async () => {
     const name = prompt('Enter a name for this palette:', `Palette #${Math.floor(Math.random() * 1000)}`);
     if (name) {
+      const publish = confirm('Would you like to publish this palette to the Community Creations gallery?');
+      const username = publish ? (prompt('Enter your display name for credit:', 'Anonymous Designer') || 'Anonymous Designer') : null;
+
       onSavePalette({
         name,
         colors: colors.map(c => c.hex)
       });
-      showToast(`Saved palette "${name}" to vault!`);
+      showToast(`Saved palette "${name}" to local vault!`);
+
+      if (publish) {
+        try {
+          await saveCommunityPalette({
+            name,
+            colors: colors.map(c => c.hex),
+            mode: 'Custom',
+            username
+          });
+          showToast('Successfully published palette to Community creations!');
+        } catch (err) {
+          console.error("Failed to publish palette:", err);
+        }
+      }
     }
   };
 

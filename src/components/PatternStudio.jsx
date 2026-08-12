@@ -21,6 +21,7 @@ import PatternExplorer from './pattern/PatternExplorer';
 import PatternPalette from './pattern/PatternPalette';
 import PatternExport from './pattern/PatternExport';
 import PatternVisualizer from './pattern/PatternVisualizer';
+import { saveCommunityPattern } from '../utils/supabaseClient';
 
 export default function PatternStudio({ activePalette = [], onSavePattern, showToast }) {
   const { theme } = useTheme();
@@ -140,15 +141,47 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
   };
 
   // Save template configuration
-  const handleSave = () => {
+  const handleSave = async () => {
     const name = prompt('Name this pattern config:', `${patternObj.name} Config`);
     if (name) {
+      const publish = confirm('Would you like to publish this pattern to the Community Gallery?');
+      const username = publish ? (prompt('Enter your display name for credit:', 'Anonymous Creator') || 'Anonymous Creator') : null;
+      
       onSavePattern({
         name,
         patternType,
         settings: { width, height, scale, stroke, angle, bg, color1, color2 }
       });
+
+      if (publish) {
+        try {
+          await saveCommunityPattern({
+            name,
+            patternType,
+            settings: { width, height, scale, stroke, angle, bg, color1, color2 },
+            username
+          });
+          if (showToast) showToast('Successfully published pattern to Community Gallery!');
+        } catch (err) {
+          console.error("Failed to publish pattern:", err);
+        }
+      }
     }
+  };
+
+  const handleLoadCommunityPattern = (pattern) => {
+    setPatternType(pattern.pattern_type);
+    setWidth(pattern.width);
+    setHeight(pattern.height);
+    setScale(pattern.scale);
+    setStroke(pattern.stroke);
+    setAngle(pattern.angle);
+    setBg(pattern.bg);
+    setColor1(pattern.color1);
+    setColor2(pattern.color2);
+    setIsPaletteImported(false);
+    setActiveSubTab('canvas');
+    if (showToast) showToast(`Loaded pattern: ${pattern.name}`);
   };
 
   const navItems = [
@@ -259,6 +292,7 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
             patternTypes={PATTERN_TYPES}
             patternType={patternType}
             onLoadTemplate={handleLoadTemplate}
+            onLoadCommunityPattern={handleLoadCommunityPattern}
             width={width} height={height} scale={scale} stroke={stroke}
             bg={bg} color1={color1} color2={color2}
             isPaletteImported={isPaletteImported}

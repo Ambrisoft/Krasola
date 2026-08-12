@@ -15,6 +15,7 @@ import ImageColorExtractor from './image/ImageColorExtractor';
 import ImageEditorCanvas from './image/ImageEditorCanvas';
 import ImageVectorStudio from './image/ImageVectorStudio';
 import ImageExport from './image/ImageExport';
+import { checkRateLimit } from '../utils/rateLimit';
 
 export default function ImageSearch({ onSendToPaletteLab, onSaveImage }) {
   const { theme } = useTheme();
@@ -61,6 +62,12 @@ export default function ImageSearch({ onSendToPaletteLab, onSaveImage }) {
 
   // Explicit Search Execution
   const handleExecuteSearch = async (targetQuery = searchQuery, targetOrientation = orientation, targetLicense = license) => {
+    const rateLimit = checkRateLimit('image_search', 10, 60000); // 10 searches per minute limit
+    if (!rateLimit.allowed) {
+      alert(`Rate limit exceeded! Please wait ${rateLimit.retryAfter} seconds before trying again.`);
+      return;
+    }
+
     const q = targetQuery || 'home';
     setSearchQuery(q);
     setLoading(true);
