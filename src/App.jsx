@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import Home from './components/Home';
@@ -9,14 +9,20 @@ import IconFinder from './components/IconFinder';
 import ImageSearch from './components/ImageSearch';
 import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
+import Account from './components/Account';
+import { supabase, isSupabaseConfigured } from './utils/supabaseClient';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('pref_default_tab') || 'home';
+    return sessionStorage.getItem('current_active_tab') || localStorage.getItem('pref_default_tab') || 'home';
   });
   const [activePalette, setActivePalette] = useState(['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [copiedHex, setCopiedHex] = useState(null);
+
+  useEffect(() => {
+    sessionStorage.setItem('current_active_tab', activeTab);
+  }, [activeTab]);
 
   // User preferences states
   const [enableGlow, setEnableGlow] = useState(() => {
@@ -46,6 +52,75 @@ export default function App() {
   
   // Consume global ThemeContext
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
+
+  // User auth state tracker
+  const [user, setUser] = useState(null);
+  const [cloudPalettes, setCloudPalettes] = useState([]);
+  const [cloudPatterns, setCloudPatterns] = useState([]);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const fetchCloudAssets = async () => {
+    if (isSupabaseConfigured && user) {
+      try {
+        const { data: palettes } = await supabase
+          .from('community_palettes')
+          .select('*')
+          .eq('user_id', user.id);
+        if (palettes) setCloudPalettes(palettes);
+
+        const { data: patterns } = await supabase
+          .from('community_patterns')
+          .select('*')
+          .eq('user_id', user.id);
+        if (patterns) {
+          const normalized = patterns.map(p => ({
+            id: p.id,
+            user_id: p.user_id,
+            username: p.username,
+            name: p.name,
+            patternType: p.pattern_type,
+            settings: {
+              width: p.width,
+              height: p.height,
+              scale: p.scale,
+              stroke: p.stroke,
+              angle: p.angle,
+              bg: p.bg,
+              color1: p.color1,
+              color2: p.color2
+            }
+          }));
+          setCloudPatterns(normalized);
+        }
+      } catch (e) {
+        console.warn("Error fetching cloud assets", e);
+      }
+    } else {
+      setCloudPalettes([]);
+      setCloudPatterns([]);
+    }
+  };
+
+  useEffect(() => {
+    if (isSupabaseConfigured) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user || null);
+      });
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user || null);
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCloudAssets();
+  }, [user]);
 
   // Saved configs states (Local Storage fallback)
   const [savedPalettes, setSavedPalettes] = useState(() => {
@@ -82,27 +157,111 @@ export default function App() {
     localStorage.setItem('saved_images', JSON.stringify(savedImages));
   }, [savedImages]);
 
+  // Combined items list
+  const displayedPalettes = [...savedPalettes, ...cloudPalettes];
+  const displayedPatterns = [...savedPatterns, ...cloudPatterns];
+
   // Operations
-  const handleSavePalette = (newPalette) => {
-    setSavedPalettes(prev => [...prev, newPalette]);
+  const handleSavePalette = async (newPalette) => {
+    const autoSyncVal = JSON.parse(localStorage.getItem('pref_auto_sync') || 'true');
+    if (user && autoSyncVal && isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('community_palettes').insert([{
+          user_id: user.id,
+          username: user.user_metadata?.display_name || user.email.split('@')[0],
+          name: newPalette.name || 'Unnamed Palette',
+          colors: newPalette.colors,
+          mode: newPalette.mode || 'Custom',
+          likes: 0
+        }]).select();
+        if (!error && data) {
+          fetchCloudAssets();
+          showToast("Saved to cloud vault successfully!");
+          return;
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    // Fallback to local
+    setSavedPalettes(prev => [...prev, { ...newPalette, id: newPalette.id || Math.random().toString(36).substring(2) }]);
+    showToast("Saved to local offline vault!");
   };
-  const handleDeletePalette = (index) => {
-    setSavedPalettes(prev => prev.filter((_, i) => i !== index));
+
+  const handleDeletePalette = async (index) => {
+    const item = displayedPalettes[index];
+    if (item && item.user_id && isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.from('community_palettes').delete().eq('id', item.id);
+        if (error) throw error;
+        fetchCloudAssets();
+        showToast("Deleted from cloud vault!");
+      } catch (e) {
+        console.error(e);
+      }
+    } else if (item) {
+      setSavedPalettes(prev => prev.filter(p => p.id !== item.id));
+      showToast("Deleted from local vault.");
+    }
   };
+
   const handleLoadPalette = (colors) => {
     setActivePalette(colors);
     setActiveTab('palette');
   };
 
-  const handleSavePattern = (newPattern) => {
-    setSavedPatterns(prev => [...prev, newPattern]);
+  const handleSavePattern = async (newPattern) => {
+    const autoSyncVal = JSON.parse(localStorage.getItem('pref_auto_sync') || 'true');
+    if (user && autoSyncVal && isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('community_patterns').insert([{
+          user_id: user.id,
+          username: user.user_metadata?.display_name || user.email.split('@')[0],
+          name: newPattern.name || 'Unnamed Pattern',
+          pattern_type: newPattern.patternType || 'dots',
+          width: newPattern.settings?.width || 40,
+          height: newPattern.settings?.height || 40,
+          scale: newPattern.settings?.scale || 1,
+          stroke: newPattern.settings?.stroke || 2,
+          angle: newPattern.settings?.angle || 0,
+          bg: newPattern.settings?.bg || '#0f172a',
+          color1: newPattern.settings?.color1 || '#6366f1',
+          color2: newPattern.settings?.color2 || '#38bdf8'
+        }]).select();
+        if (!error && data) {
+          fetchCloudAssets();
+          showToast("Saved to cloud vault successfully!");
+          return;
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    // Fallback to local
+    setSavedPatterns(prev => [...prev, { ...newPattern, id: newPattern.id || Math.random().toString(36).substring(2) }]);
+    showToast("Saved to local offline vault!");
   };
-  const handleDeletePattern = (index) => {
-    setSavedPatterns(prev => prev.filter((_, i) => i !== index));
+
+  const handleDeletePattern = async (index) => {
+    const item = displayedPatterns[index];
+    if (item && item.user_id && isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.from('community_patterns').delete().eq('id', item.id);
+        if (error) throw error;
+        fetchCloudAssets();
+        showToast("Deleted from cloud vault!");
+      } catch (e) {
+        console.error(e);
+      }
+    } else if (item) {
+      setSavedPatterns(prev => prev.filter(p => p.id !== item.id));
+      showToast("Deleted from local vault.");
+    }
   };
 
   const handleSaveIcon = (newIcon) => {
     setSavedIcons(prev => [...prev, newIcon]);
+    showToast("Saved icon!");
   };
   const handleDeleteIcon = (index) => {
     setSavedIcons(prev => prev.filter((_, i) => i !== index));
@@ -110,6 +269,7 @@ export default function App() {
 
   const handleSaveImage = (newImage) => {
     setSavedImages(prev => [...prev, newImage]);
+    showToast("Saved image!");
   };
   const handleDeleteImage = (index) => {
     setSavedImages(prev => prev.filter((_, i) => i !== index));
@@ -121,7 +281,7 @@ export default function App() {
     setTimeout(() => setCopiedHex(null), 1000);
   };
 
-  const totalSavedCount = savedPalettes.length + savedPatterns.length + savedIcons.length + savedImages.length;
+  const totalSavedCount = displayedPalettes.length + displayedPatterns.length + savedIcons.length + savedImages.length;
 
   // Breadcrumb mappings
   const tabTitles = {
@@ -131,6 +291,7 @@ export default function App() {
     icon: 'Icon Finder',
     imagesearch: 'Image Search Studio',
     saved: 'Saved Assets',
+    account: 'Account Studio',
     settings: 'Settings & Configurations'
   };
 
@@ -287,22 +448,38 @@ export default function App() {
 
         {/* Footer info containing settings button at the corner */}
         <div className={`p-3 border-t transition-colors duration-300 ${theme.border} flex items-center ${isCollapsed ? 'flex-col gap-1.5 justify-center' : 'justify-between px-4'}`}>
-          <button
-            onClick={() => {
-              setActiveTab('settings');
-              setIsCollapsed(true);
-            }}
-            title="Settings"
-            className={`p-1.5 rounded-xl border transition-all ${
-              activeTab === 'settings'
-                ? theme.accent
-                : theme.isDark
-                  ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
-                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
-            }`}
-          >
-            <Settings size={14} />
-          </button>
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => {
+                setActiveTab('account');
+              }}
+              title="Account Studio"
+              className={`p-1.5 rounded-xl border transition-all ${
+                activeTab === 'account'
+                  ? theme.accent
+                  : theme.isDark
+                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+              }`}
+            >
+              <User size={14} />
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('settings');
+              }}
+              title="Settings"
+              className={`p-1.5 rounded-xl border transition-all ${
+                activeTab === 'settings'
+                  ? theme.accent
+                  : theme.isDark
+                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+              }`}
+            >
+              <Settings size={14} />
+            </button>
+          </div>
           <span className="text-[10px] text-slate-500 font-bold">
             {isCollapsed ? 'v1.0' : 'Krasola v1.0.0'}
           </span>
@@ -448,8 +625,8 @@ export default function App() {
 
             {activeTab === 'saved' && (
               <SavedAssets
-                savedPalettes={savedPalettes}
-                savedPatterns={savedPatterns}
+                savedPalettes={displayedPalettes}
+                savedPatterns={displayedPatterns}
                 savedIcons={savedIcons}
                 savedImages={savedImages}
                 onDeletePalette={handleDeletePalette}
@@ -457,6 +634,17 @@ export default function App() {
                 onDeleteIcon={handleDeleteIcon}
                 onDeleteImage={handleDeleteImage}
                 onLoadPalette={handleLoadPalette}
+              />
+            )}
+
+            {activeTab === 'account' && (
+              <Account
+                savedPalettes={savedPalettes}
+                savedPatterns={savedPatterns}
+                setSavedPalettes={setSavedPalettes}
+                setSavedPatterns={setSavedPatterns}
+                showToast={showToast}
+                onRefreshCloud={fetchCloudAssets}
               />
             )}
 
@@ -481,6 +669,16 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Dynamic Glassmorphic Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fadeIn">
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-indigo-600 border border-indigo-500/20 text-white text-xs font-bold shadow-lg shadow-indigo-600/30">
+            <Check size={14} className="shrink-0" />
+            <span>{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
