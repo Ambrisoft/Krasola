@@ -20,9 +20,9 @@ import PaletteExplorer from './palette/PaletteExplorer';
 import PaletteExtractor from './palette/PaletteExtractor';
 import PaletteAccessibility from './palette/PaletteAccessibility';
 import PaletteVisualizer from './palette/PaletteVisualizer';
-import { saveCommunityPalette } from '../utils/supabaseClient';
+import SaveAssetModal from './SaveAssetModal';
 
-export default function PaletteLab({ activePalette, setActivePalette, onSavePalette, enableShortcuts = true }) {
+export default function PaletteLab({ activePalette, setActivePalette, onSavePalette, isLoggedIn = false, enableShortcuts = true }) {
   const { theme } = useTheme();
   
   // Shared sub-app state: array of swatches { hex, isLocked }
@@ -34,6 +34,7 @@ export default function PaletteLab({ activePalette, setActivePalette, onSavePale
   const [isSubSidebarCollapsed, setIsSubSidebarCollapsed] = useState(false);
   const [copiedStatus, setCopiedStatus] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   // Synchronize changes back to parent activePalette so Pattern & Icon components can sync
   useEffect(() => {
@@ -53,33 +54,18 @@ export default function PaletteLab({ activePalette, setActivePalette, onSavePale
     showToast('Loaded palette into workspace generator!');
   };
 
-  // Save palette dialog
-  const handleSave = async () => {
-    const name = prompt('Enter a name for this palette:', `Palette #${Math.floor(Math.random() * 1000)}`);
-    if (name) {
-      const publish = confirm('Would you like to publish this palette to the Community Creations gallery?');
-      const username = publish ? (prompt('Enter your display name for credit:', 'Anonymous Designer') || 'Anonymous Designer') : null;
+  // Open Save Palette Modal Popup
+  const handleSave = () => {
+    setIsSaveModalOpen(true);
+  };
 
-      onSavePalette({
-        name,
-        colors: colors.map(c => c.hex)
-      });
-      showToast(`Saved palette "${name}" to local vault!`);
-
-      if (publish) {
-        try {
-          await saveCommunityPalette({
-            name,
-            colors: colors.map(c => c.hex),
-            mode: 'Custom',
-            username
-          });
-          showToast('Successfully published palette to Community creations!');
-        } catch (err) {
-          console.error("Failed to publish palette:", err);
-        }
-      }
-    }
+  // Save palette handler triggered from modal
+  const handleConfirmSave = ({ name, isPublic }) => {
+    onSavePalette({
+      name,
+      colors: colors.map(c => c.hex),
+      isPublic
+    });
   };
 
   // Copy CSS variables list
@@ -331,6 +317,16 @@ export default function PaletteLab({ activePalette, setActivePalette, onSavePale
           />
         )}
       </main>
+
+      {/* Save Asset Modal Popup */}
+      <SaveAssetModal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSave={handleConfirmSave}
+        assetType="palette"
+        colors={colors.map(c => c.hex)}
+        isLoggedIn={isLoggedIn}
+      />
     </div>
   );
 }
