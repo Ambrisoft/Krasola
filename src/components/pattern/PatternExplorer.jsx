@@ -71,23 +71,31 @@ export default function PatternExplorer({
           )}
 
           {/* Double Tab Switcher */}
-          <div className="inline-flex p-1 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className={`inline-flex p-1 rounded-xl border transition-all ${
+            theme.isDark 
+              ? 'bg-slate-900/60 border-slate-800' 
+              : 'bg-slate-200/70 border-slate-300 shadow-inner'
+          }`}>
             <button
               onClick={() => setActiveTab('platform')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 activeTab === 'platform'
                   ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : theme.isDark 
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-300/40'
               }`}
             >
               <Shield size={12} /> Krasola Presets
             </button>
             <button
               onClick={() => setActiveTab('community')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 activeTab === 'community'
                   ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : theme.isDark 
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-300/40'
               }`}
             >
               <Globe size={12} /> Community Gallery
