@@ -1,8 +1,20 @@
 import React from 'react';
-import { Trash2, ArrowUpRight } from 'lucide-react';
+import { Trash2, ArrowUpRight, Globe, Lock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-export default function SavedAssets({ savedPalettes, savedPatterns, savedIcons, savedImages = [], onDeletePalette, onDeletePattern, onDeleteIcon, onDeleteImage, onLoadPalette }) {
+export default function SavedAssets({ 
+  savedPalettes, 
+  savedPatterns, 
+  savedIcons, 
+  savedImages = [], 
+  onDeletePalette, 
+  onDeletePattern, 
+  onDeleteIcon, 
+  onDeleteImage, 
+  onLoadPalette,
+  onTogglePublic,
+  user
+}) {
   const { theme } = useTheme();
 
   const copyToClipboard = (text) => {
@@ -16,7 +28,7 @@ export default function SavedAssets({ savedPalettes, savedPatterns, savedIcons, 
         <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
           <span>💼</span> Saved Assets Hub
         </h2>
-        <p className={`text-xs ${theme.textMuted}`}>All configurations are saved client-side inside your browser local storage.</p>
+        <p className={`text-xs ${theme.textMuted}`}>Manage saved palettes, pattern configurations, and cloud visibility settings.</p>
       </div>
 
       {/* Palettes section */}
@@ -28,15 +40,30 @@ export default function SavedAssets({ savedPalettes, savedPatterns, savedIcons, 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {savedPalettes.map((palette, idx) => (
               <div key={idx} className={`rounded-xl border p-4 space-y-3 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 ${theme.card}`}>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold">{palette.name}</span>
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <span className="text-sm font-semibold block">{palette.name}</span>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {palette.is_public ? (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-1">
+                          <Globe size={10} /> Public
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-500/10 border border-slate-500/20 text-slate-400 flex items-center gap-1">
+                          <Lock size={10} /> Private
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <button
                     onClick={() => onDeletePalette(idx)}
-                    className="text-slate-400 hover:text-red-400 transition-colors"
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    title="Delete palette"
                   >
                     <Trash2 size={15} />
                   </button>
                 </div>
+
                 <div className="flex h-10 rounded-lg overflow-hidden border dark:border-slate-800 border-slate-200">
                   {palette.colors.map((color, cIdx) => (
                     <div
@@ -48,21 +75,29 @@ export default function SavedAssets({ savedPalettes, savedPatterns, savedIcons, 
                     />
                   ))}
                 </div>
-                <div className="flex justify-between gap-2 pt-1">
+
+                <div className="flex justify-between gap-1.5 pt-1">
                   <button
                     onClick={() => onLoadPalette(palette.colors)}
                     className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold rounded-lg text-white flex items-center justify-center gap-1 transition-all"
                   >
                     Load <ArrowUpRight size={12} />
                   </button>
-                  <button
-                    onClick={() => copyToClipboard(palette.colors.join(', '))}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                      theme.isDark ? 'bg-slate-800 hover:bg-slate-800 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    }`}
-                  >
-                    Copy CSS
-                  </button>
+
+                  {onTogglePublic && (
+                    <button
+                      onClick={() => onTogglePublic('palette', palette)}
+                      className={`px-2.5 py-1.5 text-[10px] font-bold rounded-lg border flex items-center gap-1 transition-all ${
+                        palette.is_public
+                          ? 'border-slate-700 hover:bg-slate-800 text-slate-400'
+                          : 'border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400'
+                      }`}
+                      title={palette.is_public ? "Make Private" : "Make Public"}
+                    >
+                      {palette.is_public ? <Lock size={10} /> : <Globe size={10} />}
+                      {palette.is_public ? "Make Private" : "Make Public"}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -79,23 +114,52 @@ export default function SavedAssets({ savedPalettes, savedPatterns, savedIcons, 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {savedPatterns.map((pattern, idx) => (
               <div key={idx} className={`rounded-xl border p-4 space-y-3 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 ${theme.card}`}>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold">{pattern.name}</span>
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <span className="text-sm font-semibold block">{pattern.name}</span>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {pattern.is_public ? (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-1">
+                          <Globe size={10} /> Public
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-500/10 border border-slate-500/20 text-slate-400 flex items-center gap-1">
+                          <Lock size={10} /> Private
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <button
                     onClick={() => onDeletePattern(idx)}
-                    className="text-slate-400 hover:text-red-400 transition-colors"
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    title="Delete pattern"
                   >
                     <Trash2 size={15} />
                   </button>
                 </div>
-                <div className="h-20 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden relative">
-                  <div className="absolute inset-0 opacity-50 flex items-center justify-center text-[10px] text-slate-500 font-bold bg-slate-900/80">
-                    Template: {pattern.patternType.toUpperCase()}
+
+                <div className="h-20 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden relative flex items-center justify-center">
+                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
+                    Template: {pattern.patternType || pattern.pattern_type}
                   </div>
                 </div>
-                <div className="flex justify-between gap-2">
-                  <span className={`text-[10px] ${theme.textMuted}`}>Angle: {pattern.settings.angle}°</span>
-                  <span className={`text-[10px] ${theme.textMuted}`}>Scale: {pattern.settings.scale}x</span>
+
+                <div className="flex justify-between items-center pt-1">
+                  <span className={`text-[10px] ${theme.textMuted}`}>Scale: {pattern.settings?.scale || pattern.scale}x</span>
+                  {onTogglePublic && (
+                    <button
+                      onClick={() => onTogglePublic('pattern', pattern)}
+                      className={`px-2.5 py-1.5 text-[10px] font-bold rounded-lg border flex items-center gap-1 transition-all ${
+                        pattern.is_public
+                          ? 'border-slate-700 hover:bg-slate-800 text-slate-400'
+                          : 'border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400'
+                      }`}
+                      title={pattern.is_public ? "Make Private" : "Make Public"}
+                    >
+                      {pattern.is_public ? <Lock size={10} /> : <Globe size={10} />}
+                      {pattern.is_public ? "Make Private" : "Make Public"}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
