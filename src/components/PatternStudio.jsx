@@ -21,13 +21,14 @@ import PatternExplorer from './pattern/PatternExplorer';
 import PatternPalette from './pattern/PatternPalette';
 import PatternExport from './pattern/PatternExport';
 import PatternVisualizer from './pattern/PatternVisualizer';
-import { saveCommunityPattern } from '../utils/supabaseClient';
+import SaveAssetModal from './SaveAssetModal';
 
-export default function PatternStudio({ activePalette = [], onSavePattern, showToast }) {
+export default function PatternStudio({ activePalette = [], onSavePattern, showToast, isLoggedIn = false }) {
   const { theme } = useTheme();
   const [activeSubTab, setActiveSubTab] = useState('templates');
   const [isSubSidebarCollapsed, setIsSubSidebarCollapsed] = useState(false);
   const [isPaletteImported, setIsPaletteImported] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   // Pattern parameters
   const [patternType, setPatternType] = useState('dots');
@@ -140,33 +141,19 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
     }
   };
 
-  // Save template configuration
-  const handleSave = async () => {
-    const name = prompt('Name this pattern config:', `${patternObj.name} Config`);
-    if (name) {
-      const publish = confirm('Would you like to publish this pattern to the Community Gallery?');
-      const username = publish ? (prompt('Enter your display name for credit:', 'Anonymous Creator') || 'Anonymous Creator') : null;
-      
-      onSavePattern({
-        name,
-        patternType,
-        settings: { width, height, scale, stroke, angle, bg, color1, color2 }
-      });
+  // Open Save Pattern Modal Popup
+  const handleSave = () => {
+    setIsSaveModalOpen(true);
+  };
 
-      if (publish) {
-        try {
-          await saveCommunityPattern({
-            name,
-            patternType,
-            settings: { width, height, scale, stroke, angle, bg, color1, color2 },
-            username
-          });
-          if (showToast) showToast('Successfully published pattern to Community Gallery!');
-        } catch (err) {
-          console.error("Failed to publish pattern:", err);
-        }
-      }
-    }
+  // Save pattern handler triggered from modal
+  const handleConfirmSave = ({ name, isPublic }) => {
+    onSavePattern({
+      name,
+      patternType,
+      settings: { width, height, scale, stroke, angle, bg, color1, color2 },
+      isPublic
+    });
   };
 
   const handleLoadCommunityPattern = (pattern) => {
@@ -329,6 +316,16 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
           />
         )}
       </main>
+
+      {/* Save Asset Modal Popup */}
+      <SaveAssetModal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSave={handleConfirmSave}
+        assetType="pattern"
+        patternData={{ patternType, settings: { width, height, scale, stroke, angle, bg, color1, color2 } }}
+        isLoggedIn={isLoggedIn}
+      />
     </div>
   );
 }
