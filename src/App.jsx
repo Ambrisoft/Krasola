@@ -11,6 +11,7 @@ import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
 import Account from './components/Account';
 import { supabase, isSupabaseConfigured } from './utils/supabaseClient';
+import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -164,28 +165,49 @@ export default function App() {
   // Operations
   const handleSavePalette = async (newPalette) => {
     const autoSyncVal = JSON.parse(localStorage.getItem('pref_auto_sync') || 'true');
+    const isPublicChoice = newPalette.isPublic === true;
+
+    // Smart unique name generation based on color profile
+    const paletteName = newPalette.name || await getUniquePaletteName(
+      newPalette.colors,
+      displayedPalettes.map(p => p.name),
+      isSupabaseConfigured ? supabase : null
+    );
+
     if (user && autoSyncVal && isSupabaseConfigured) {
       try {
+        const username = user.user_metadata?.display_name || user.email.split('@')[0];
         const { data, error } = await supabase.from('community_palettes').insert([{
           user_id: user.id,
-          username: user.user_metadata?.display_name || user.email.split('@')[0],
-          name: newPalette.name || 'Unnamed Palette',
+          username: username,
+          name: paletteName,
           colors: newPalette.colors,
           mode: newPalette.mode || 'Custom',
+          is_public: isPublicChoice,
           likes: 0
         }]).select();
         if (!error && data) {
           fetchCloudAssets();
-          showToast("Saved to cloud vault successfully!");
+          showToast(
+            isPublicChoice
+              ? `Saved & published palette "${paletteName}" to Community!`
+              : `Saved private palette "${paletteName}" to your cloud vault!`
+          );
           return;
         }
       } catch (e) {
         console.warn(e);
       }
     }
-    // Fallback to local
-    setSavedPalettes(prev => [...prev, { ...newPalette, id: newPalette.id || Math.random().toString(36).substring(2) }]);
-    showToast("Saved to local offline vault!");
+    // Fallback to local offline vault
+    const localEntry = {
+      ...newPalette,
+      name: paletteName,
+      is_public: false,
+      id: newPalette.id || Math.random().toString(36).substring(2)
+    };
+    setSavedPalettes(prev => [...prev, localEntry]);
+    showToast(`Saved private palette "${paletteName}" to local vault!`);
   };
 
   const handleDeletePalette = async (index) => {
@@ -212,12 +234,30 @@ export default function App() {
 
   const handleSavePattern = async (newPattern) => {
     const autoSyncVal = JSON.parse(localStorage.getItem('pref_auto_sync') || 'true');
+    const isPublicChoice = newPattern.isPublic === true;
+
+    // Smart unique name generation based on pattern attributes
+    const patternColors = [
+      newPattern.settings?.bg,
+      newPattern.settings?.color1,
+      newPattern.settings?.color2
+    ].filter(Boolean);
+
+    const patternName = newPattern.name || await getUniquePatternName(
+      newPattern.patternType,
+      newPattern.settings,
+      patternColors,
+      displayedPatterns.map(p => p.name),
+      isSupabaseConfigured ? supabase : null
+    );
+
     if (user && autoSyncVal && isSupabaseConfigured) {
       try {
+        const username = user.user_metadata?.display_name || user.email.split('@')[0];
         const { data, error } = await supabase.from('community_patterns').insert([{
           user_id: user.id,
-          username: user.user_metadata?.display_name || user.email.split('@')[0],
-          name: newPattern.name || 'Unnamed Pattern',
+          username: username,
+          name: patternName,
           pattern_type: newPattern.patternType || 'dots',
           width: newPattern.settings?.width || 40,
           height: newPattern.settings?.height || 40,
@@ -226,20 +266,74 @@ export default function App() {
           angle: newPattern.settings?.angle || 0,
           bg: newPattern.settings?.bg || '#0f172a',
           color1: newPattern.settings?.color1 || '#6366f1',
-          color2: newPattern.settings?.color2 || '#38bdf8'
+          color2: newPattern.settings?.color2 || '#38bdf8',
+          is_public: isPublicChoice
         }]).select();
         if (!error && data) {
           fetchCloudAssets();
-          showToast("Saved to cloud vault successfully!");
+          showToast(
+            isPublicChoice
+              ? `Saved & published pattern "${patternName}" to Community!`
+              : `Saved private pattern "${patternName}" to your cloud account!`
+          );
           return;
         }
       } catch (e) {
         console.warn(e);
       }
     }
-    // Fallback to local
-    setSavedPatterns(prev => [...prev, { ...newPattern, id: newPattern.id || Math.random().toString(36).substring(2) }]);
-    showToast("Saved to local offline vault!");
+    // Fallback to local offline vault
+    const localEntry = {
+      ...newPattern,
+      name: patternName,
+      is_public: false,
+      id: newPattern.id || Math.random().toString(36).substring(2)
+    };
+    setSavedPatterns(prev => [...prev, localEntry]);
+    showToast(`Saved private pattern "${patternName}" to local vault!`);
+  };
+
+  const handleTogglePublicAsset = async (assetType, item) => {
+    if (!user) {
+      showToast("Please sign in to publish your creations to the public Community Gallery!");
+      return;
+    }
+    const table = assetType === 'palette' ? 'community_palettes' : 'community_patterns';
+    const newStatus = !item.is_public;
+
+    if (item.user_id && isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from(table)
+          .update({ is_public: newStatus })
+          .eq('id', item.id)
+          .select();
+
+        if (error) throw error;
+
+        // Optimistically update cloud state for instant UI re-render
+        if (assetType === 'palette') {
+          setCloudPalettes(prev => prev.map(p => p.id === item.id ? { ...p, is_public: newStatus } : p));
+        } else {
+          setCloudPatterns(prev => prev.map(p => p.id === item.id ? { ...p, is_public: newStatus } : p));
+        }
+
+        await fetchCloudAssets();
+        showToast(newStatus ? `Published "${item.name}" to Community Gallery!` : `Made "${item.name}" Private.`);
+      } catch (e) {
+        console.error("Failed to toggle visibility:", e);
+        showToast("Failed to update visibility status.");
+      }
+    } else {
+      // Local offline item being toggled by logged-in user
+      if (assetType === 'palette') {
+        await handleSavePalette({ ...item, isPublic: newStatus });
+        setSavedPalettes(prev => prev.filter(p => p.id !== item.id));
+      } else {
+        await handleSavePattern({ ...item, isPublic: newStatus });
+        setSavedPatterns(prev => prev.filter(p => p.id !== item.id));
+      }
+    }
   };
 
   const handleDeletePattern = async (index) => {
@@ -595,6 +689,7 @@ export default function App() {
                 activePalette={activePalette}
                 setActivePalette={setActivePalette}
                 onSavePalette={handleSavePalette}
+                isLoggedIn={!!user}
                 enableShortcuts={enableShortcuts}
               />
             )}
@@ -603,6 +698,7 @@ export default function App() {
               <PatternStudio
                 activePalette={activePalette}
                 onSavePattern={handleSavePattern}
+                isLoggedIn={!!user}
               />
             )}
 
@@ -634,6 +730,8 @@ export default function App() {
                 onDeleteIcon={handleDeleteIcon}
                 onDeleteImage={handleDeleteImage}
                 onLoadPalette={handleLoadPalette}
+                onTogglePublic={handleTogglePublicAsset}
+                user={user}
               />
             )}
 
