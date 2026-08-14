@@ -30,7 +30,11 @@ const fallbackPresetsPatterns = [
 export async function fetchPlatformPalettes() {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase.from('platform_palettes').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('platform_palettes')
+        .select('*')
+        .range(0, 2000)
+        .order('created_at', { ascending: false });
       if (!error && data) return data;
     } catch (e) {
       console.warn("Supabase fetch failed, loading presets fallback.", e);
@@ -42,13 +46,17 @@ export async function fetchPlatformPalettes() {
 export async function fetchCommunityPalettes() {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase.from('community_palettes').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('community_palettes')
+        .select('*')
+        .eq('is_public', true)
+        .order('created_at', { ascending: false });
       if (!error && data) return data;
     } catch (e) {
       console.warn("Supabase fetch failed, loading community fallback.", e);
     }
   }
-  return getMockTable('community_palettes');
+  return getMockTable('community_palettes').filter(p => p.is_public === true);
 }
 
 export async function saveCommunityPalette({ name, colors, mode, username = 'Anonymous Designer' }) {
@@ -97,13 +105,17 @@ export async function fetchPlatformPatterns() {
 export async function fetchCommunityPatterns() {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase.from('community_patterns').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('community_patterns')
+        .select('*')
+        .eq('is_public', true)
+        .order('created_at', { ascending: false });
       if (!error && data) return data;
     } catch (e) {
       console.warn("Supabase fetch failed, loading community fallback.", e);
     }
   }
-  return getMockTable('community_patterns');
+  return getMockTable('community_patterns').filter(p => p.is_public === true);
 }
 
 export async function saveCommunityPattern({ name, patternType, settings, username = 'Anonymous Maker' }) {
