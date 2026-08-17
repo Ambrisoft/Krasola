@@ -74,10 +74,16 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
   };
 
   // Load template from gallery into Canvas Studio
-  const handleLoadTemplate = (key) => {
+  const handleLoadTemplate = (key, customBg, customC1, customC2, customName) => {
     setPatternType(key);
     const targetObj = PATTERN_TYPES[key];
-    if (targetObj && !isPaletteImported) {
+    if (customBg && customC1 && customC2) {
+      setBg(customBg);
+      setColor1(customC1);
+      setColor2(customC2);
+      setIsPaletteImported(false);
+      if (showToast && customName) showToast(`Loaded preset: ${customName}`);
+    } else if (targetObj && !isPaletteImported) {
       // If palette has NOT been imported, load template's curated aesthetic default theme!
       setBg(targetObj.defaultBg || '#0f172a');
       setColor1(targetObj.defaultColor1 || '#6366f1');
