@@ -1,6 +1,8 @@
 import React from 'react';
-import { Trash2, ArrowUpRight, Globe, Lock } from 'lucide-react';
+import { Trash2, ArrowUpRight, Globe, Lock, Download, ExternalLink, Sparkles } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
+import { formatBytes } from '../utils/imageCompression';
 
 export default function SavedAssets({ 
   savedPalettes, 
@@ -16,10 +18,11 @@ export default function SavedAssets({
   user
 }) {
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+    toast.success('Copied to clipboard!');
   };
 
   return (
@@ -211,35 +214,115 @@ export default function SavedAssets({
 
       {/* Images Section */}
       <div className="space-y-4">
-        <h3 className={`text-sm font-semibold border-b pb-2 ${theme.border}`}>Saved Image Assets ({savedImages.length})</h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2 border-slate-700/50">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <span>🖼️</span> Saved Image Assets ({savedImages.length})
+          </h3>
+          <div className="flex items-center gap-2 text-[10px]">
+            <span className="font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-bold">
+              💾 {formatBytes(savedImages.reduce((sum, img) => sum + (img.file_size_bytes || 0), 0))} / 50 MB ({savedImages.length}/30 Slots)
+            </span>
+            <span className={`hidden sm:inline ${theme.textMuted}`}>WebP Cloud Storage</span>
+          </div>
+        </div>
+
         {savedImages.length === 0 ? (
-          <p className={`text-xs italic ${theme.textMuted}`}>No images saved yet. Search and save stock images inside Image Studio!</p>
+          <p className={`text-xs italic ${theme.textMuted}`}>No images saved yet. Search, edit, and save compressed WebP images inside Image Studio!</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {savedImages.map((img, idx) => (
-              <div key={idx} className={`rounded-xl border p-4 space-y-3 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 ${theme.card}`}>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold truncate max-w-[180px]">{img.title}</span>
-                  <button
-                    onClick={() => onDeleteImage(idx)}
-                    className="text-slate-400 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 size={15} />
-                  </button>
+              <div key={img.id || idx} className={`rounded-2xl border p-4 space-y-3 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 ${theme.card}`}>
+                {/* Image Top Info & Privacy Status */}
+                <div className="flex justify-between items-start gap-2">
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold truncate max-w-[170px]">{img.title || 'Untitled Image'}</h4>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] ${theme.textMuted}`}>By {img.creator || 'Krasola'}</span>
+                      {img.file_size_bytes ? (
+                        <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded">
+                          {formatBytes(img.file_size_bytes)}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    {/* Privacy Badge */}
+                    {img.user_id ? (
+                      img.is_public ? (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full" title="Visible in Community Gallery">
+                          <Globe size={10} /> Public
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/80 px-2 py-0.5 rounded-full" title="Private to your vault">
+                          <Lock size={10} /> Private
+                        </span>
+                      )
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full" title="Saved locally in browser">
+                        Offline
+                      </span>
+                    )}
+
+                    <button
+                      onClick={() => onDeleteImage(idx)}
+                      className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-1"
+                      title="Delete Image Asset"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
-                <div className="h-28 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 relative">
-                  <img src={img.thumbnail || img.url} alt={img.title} className="w-full h-full object-cover" />
+
+                {/* Thumbnail Display */}
+                <div className="h-36 rounded-xl overflow-hidden bg-slate-950/60 border border-slate-800 relative group flex items-center justify-center">
+                  <img 
+                    src={img.public_url || img.thumbnail || img.url} 
+                    alt={img.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                  />
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[9px] font-bold text-slate-200">
+                    {img.width || 1920} × {img.height || 1080}
+                  </div>
                 </div>
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className={theme.textMuted}>By {img.creator}</span>
+
+                {/* Action Controls */}
+                <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-700/30">
                   <button
-                    onClick={() => copyToClipboard(img.url)}
-                    className={`px-2.5 py-1 text-[10px] font-semibold rounded-md transition-all ${
+                    onClick={() => copyToClipboard(img.public_url || img.url)}
+                    className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 ${
                       theme.isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }`}
                   >
-                    Copy URL
+                    <ExternalLink size={11} /> Copy URL
                   </button>
+
+                  <a
+                    href={img.public_url || img.url}
+                    download={`${img.title || 'krasola-image'}.webp`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`py-1.5 px-2.5 text-[10px] font-bold rounded-lg border transition-all flex items-center justify-center gap-1 ${
+                      theme.isDark ? 'border-slate-700 hover:bg-slate-800 text-slate-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                    }`}
+                    title="Download high-res WebP"
+                  >
+                    <Download size={11} />
+                  </a>
+
+                  {img.user_id && user && onTogglePublic && (
+                    <button
+                      onClick={() => onTogglePublic('image', img)}
+                      className={`px-2 py-1.5 text-[10px] font-bold rounded-lg border transition-all flex items-center gap-1 ${
+                        img.is_public
+                          ? 'border-slate-700 hover:bg-slate-800 text-slate-400'
+                          : 'border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400'
+                      }`}
+                      title={img.is_public ? 'Make Private' : 'Make Public'}
+                    >
+                      {img.is_public ? 'Make Private' : 'Make Public'}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

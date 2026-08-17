@@ -5,23 +5,31 @@ import {
   Download, Eye, EyeOff, Laptop, Key, Trash2, Sliders, Globe, RefreshCcw
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { THEMES } from '../utils/themeUtils';
-import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { supabase, isSupabaseConfigured, getUserStorageQuota } from '../utils/supabaseClient';
+import { formatBytes } from '../utils/imageCompression';
 
 export default function Account({ 
   savedPalettes, 
   savedPatterns, 
   setSavedPalettes, 
   setSavedPatterns, 
-  showToast,
   onRefreshCloud
 }) {
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
+  const { toast } = useToast();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [loginMethod, setLoginMethod] = useState('password'); // 'password' or 'magiclink'
   const [activeSection, setActiveSection] = useState('profile');
+  const [storageQuota, setStorageQuota] = useState({
+    used_bytes: 0,
+    max_bytes: 52428800,
+    image_count: 0,
+    max_images: 30
+  });
 
   // Profile preferences
   const [email, setEmail] = useState('');
@@ -106,6 +114,9 @@ export default function Account({
           } else {
             setUsername(sessionUser.user_metadata?.display_name || sessionUser.email.split('@')[0]);
           }
+
+          const quota = await getUserStorageQuota(sessionUser);
+          if (quota) setStorageQuota(quota);
         } catch (e) {
           console.warn("Error loading user profile.", e);
         }
@@ -159,9 +170,9 @@ export default function Account({
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       logActivity('Sign in completed');
-      if (showToast) showToast('Welcome back to Krasola!');
+      toast.success('Welcome back to Krasola!');
     } catch (err) {
-      alert(err.message || 'Login failed.');
+      toast.error(err.message || 'Login failed.');
     } finally {
       setLoading(false);
     }
@@ -181,10 +192,10 @@ export default function Account({
         }
       });
       if (error) throw error;
-      alert('Success! Check your email inbox for the magic sign-in link.');
+      toast.success('Success! Check your email inbox for the magic sign-in link.');
       logActivity('Requested magic link sign in');
     } catch (err) {
-      alert(err.message || 'Magic link request failed.');
+      toast.error(err.message || 'Magic link request failed.');
     } finally {
       setLoading(false);
     }
@@ -204,7 +215,7 @@ export default function Account({
         .eq('username', username)
         .maybeSingle();
       if (existing) {
-        alert("The username is already taken. Please choose another display name.");
+        toast.warning("The username is already taken. Please choose another display name.");
         setLoading(false);
         return;
       }
@@ -221,9 +232,9 @@ export default function Account({
         }
       });
       if (error) throw error;
-      alert('Sign up successful! Please check your email for confirmation.');
+      toast.success('Sign up successful! Please check your email for confirmation.');
     } catch (err) {
-      alert(err.message || 'Sign up failed.');
+      toast.error(err.message || 'Sign up failed.');
     } finally {
       setLoading(false);
     }
@@ -244,7 +255,7 @@ export default function Account({
         .not('id', 'eq', user.id)
         .maybeSingle();
       if (existing) {
-        alert("The handle is already taken by another creator.");
+        toast.warning("The handle is already taken by another creator.");
         setLoading(false);
         return;
       }
@@ -271,9 +282,9 @@ export default function Account({
       if (authError) throw authError;
 
       logActivity('Profile details updated');
-      if (showToast) showToast('Profile details updated successfully!');
+      toast.success('Profile details updated successfully!');
     } catch (err) {
-      alert(err.message || 'Update failed.');
+      toast.error(err.message || 'Update failed.');
     } finally {
       setLoading(false);
     }
@@ -287,9 +298,9 @@ export default function Account({
       const { error } = await supabase.auth.signOut({ scope: 'others' });
       if (error) throw error;
       logActivity('Revoked other device sessions');
-      if (showToast) showToast('Logged out of all other active sessions.');
+      toast.info('Logged out of all other active sessions.');
     } catch (err) {
-      alert(err.message || 'Revocation failed.');
+      toast.error(err.message || 'Revocation failed.');
     } finally {
       setLoading(false);
     }
@@ -308,9 +319,9 @@ export default function Account({
       if (error) throw error;
       setNewPassword('');
       logActivity('Password credentials rotated');
-      if (showToast) showToast('Password updated successfully!');
+      toast.success('Password updated successfully!');
     } catch (err) {
-      alert(err.message || 'Password update failed.');
+      toast.error(err.message || 'Password update failed.');
     } finally {
       setLoading(false);
     }
@@ -331,7 +342,7 @@ export default function Account({
     downloadAnchor.click();
     downloadAnchor.remove();
     logActivity('Bulk backup exported');
-    if (showToast) showToast('Backup downloaded successfully!');
+    toast.success('Backup downloaded successfully!');
   };
 
   // Bulk Delete Cloud Data
@@ -348,10 +359,10 @@ export default function Account({
       await supabase.from('community_patterns').delete().eq('user_id', user.id);
       
       logActivity('Cloud creations wiped');
-      if (showToast) showToast('All cloud-saved creations deleted.');
+      toast.info('All cloud-saved creations deleted.');
       if (onRefreshCloud) onRefreshCloud();
     } catch (err) {
-      alert(`Wipe failed: ${err.message}`);
+      toast.error(`Wipe failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -362,7 +373,7 @@ export default function Account({
     setAutoSync(val);
     localStorage.setItem('pref_auto_sync', JSON.stringify(val));
     logActivity(`Auto-sync set to ${val}`);
-    if (showToast) showToast(`Auto-sync ${val ? 'enabled' : 'disabled'}.`);
+    toast.info(`Auto-sync ${val ? 'enabled' : 'disabled'}.`);
   };
 
   // Sign out
@@ -370,7 +381,7 @@ export default function Account({
     if (!isSupabaseConfigured) return;
     try {
       await supabase.auth.signOut();
-      if (showToast) showToast('Logged out.');
+      toast.info('Logged out.');
     } catch (err) {
       console.error(err);
     }
@@ -419,14 +430,14 @@ export default function Account({
       }
 
       logActivity(`Synced ${syncCount} local assets`);
-      if (showToast) showToast(`Successfully synced ${syncCount} assets to your cloud account!`);
+      toast.success(`Successfully synced ${syncCount} assets to your cloud account!`);
       localStorage.setItem('saved_palettes', '[]');
       localStorage.setItem('saved_patterns', '[]');
       setSavedPalettes([]);
       setSavedPatterns([]);
       if (onRefreshCloud) onRefreshCloud();
     } catch (err) {
-      alert(`Sync failed: ${err.message}`);
+      toast.error(`Sync failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -917,10 +928,85 @@ export default function Account({
               <div className="space-y-6 animate-fadeIn">
                 <div>
                   <h3 className="text-lg font-bold tracking-tight">Cloud Archiver</h3>
-                  <p className={`text-xs ${theme.textMuted}`}>Automate cloud backup syncing, download snapshots, or clear remote files.</p>
+                  <p className={`text-xs ${theme.textMuted}`}>Automate cloud backup syncing, inspect storage limits, download snapshots, or clear remote files.</p>
                 </div>
 
                 <div className="space-y-4 max-w-xl">
+                  {/* Cloud Storage & Quota Meter Card */}
+                  <div className={`p-6 border rounded-3xl space-y-5 ${theme.card} relative overflow-hidden`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b dark:border-slate-800 border-slate-200 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                          <Database size={16} />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold">Cloud Storage & Quota Meter</h4>
+                          <p className={`text-[10px] ${theme.textMuted}`}>Free Creator Tier Quota Enforcement</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
+                        ⚡ Active Free Tier
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Meter 1: Storage Bytes */}
+                      <div className={`p-4 rounded-2xl border space-y-2 ${theme.isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="flex justify-between items-center text-xs font-bold">
+                          <span className="text-slate-400 text-[11px]">Storage Capacity</span>
+                          <span className="font-mono text-indigo-400">
+                            {formatBytes(storageQuota.used_bytes)} / {formatBytes(storageQuota.max_bytes)}
+                          </span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              (storageQuota.used_bytes / (storageQuota.max_bytes || 1)) > 0.85
+                                ? 'bg-rose-500'
+                                : (storageQuota.used_bytes / (storageQuota.max_bytes || 1)) > 0.6
+                                  ? 'bg-amber-500'
+                                  : 'bg-indigo-500'
+                            }`}
+                            style={{ width: `${Math.min(100, Math.round((storageQuota.used_bytes / (storageQuota.max_bytes || 1)) * 100))}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between items-center text-[10px] font-medium opacity-70">
+                          <span>{Math.round((storageQuota.used_bytes / (storageQuota.max_bytes || 1)) * 100)}% Used</span>
+                          <span>{formatBytes(Math.max(0, storageQuota.max_bytes - storageQuota.used_bytes))} Free</span>
+                        </div>
+                      </div>
+
+                      {/* Meter 2: Image Slots */}
+                      <div className={`p-4 rounded-2xl border space-y-2 ${theme.isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="flex justify-between items-center text-xs font-bold">
+                          <span className="text-slate-400 text-[11px]">Saved Image Slots</span>
+                          <span className="font-mono text-emerald-400">
+                            {storageQuota.image_count} / {storageQuota.max_images} Slots
+                          </span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              (storageQuota.image_count / (storageQuota.max_images || 1)) > 0.85
+                                ? 'bg-rose-500'
+                                : 'bg-emerald-500'
+                            }`}
+                            style={{ width: `${Math.min(100, Math.round((storageQuota.image_count / (storageQuota.max_images || 1)) * 100))}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between items-center text-[10px] font-medium opacity-70">
+                          <span>{Math.round((storageQuota.image_count / (storageQuota.max_images || 1)) * 100)}% Used</span>
+                          <span>{Math.max(0, storageQuota.max_images - storageQuota.image_count)} Left</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 p-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-xs text-indigo-300">
+                      <Sparkles size={14} className="shrink-0 text-indigo-400" />
+                      <span className="text-[11px]">Images are automatically compressed to WebP client-side before upload, saving ~98% storage space!</span>
+                    </div>
+                  </div>
+
                   {/* Preferences: Auto sync Option */}
                   <div className={`p-5 border rounded-2xl flex items-center justify-between gap-4 ${theme.card}`}>
                     <div className="space-y-1">
