@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Palette, Check, ArrowRight, Pipette, Sparkles, RefreshCw } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useToast } from '../../context/ToastContext';
 import { extractDominantPalette } from './imageUtils';
 
 export default function ImageColorExtractor({ selectedImage, onSendToPaletteLab }) {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const [palette, setPalette] = useState([]);
   const [loading, setLoading] = useState(false);
   const [copiedHex, setCopiedHex] = useState(null);
@@ -46,7 +48,7 @@ export default function ImageColorExtractor({ selectedImage, onSendToPaletteLab 
         console.log('Eyedropper closed');
       }
     } else {
-      alert('EyeDropper API is not supported in this browser version.');
+      toast.error('EyeDropper API is not supported in this browser version.');
     }
   };
 

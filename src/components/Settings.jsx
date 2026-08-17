@@ -16,6 +16,7 @@ import {
   Home
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { THEMES } from '../utils/themeUtils';
 
 export default function SettingsComponent({ 
@@ -84,6 +85,8 @@ export default function SettingsComponent({
     reader.readAsText(file);
   };
 
+  const { toast } = useToast();
+
   // Reset all data
   const handleResetAll = () => {
     if (confirm('Are you absolutely sure you want to reset Krasola? This will delete all saved palettes, patterns, icons, and images, and revert all preferences.')) {
@@ -95,7 +98,7 @@ export default function SettingsComponent({
       setEnableShortcuts(true);
       setDefaultTab('home');
       setActiveThemeId('slate-dark');
-      alert('All settings and data have been reset to factory defaults.');
+      toast.success('All settings and data have been reset to factory defaults.');
     }
   };
 

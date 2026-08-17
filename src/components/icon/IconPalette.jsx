@@ -1,9 +1,11 @@
 import React from 'react';
 import { Palette, Check } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function IconPalette({ activePalette, color, setColor }) {
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   return (
     <div className="space-y-6">
@@ -34,7 +36,7 @@ export default function IconPalette({ activePalette, color, setColor }) {
                 title={`HEX: ${hex}`}
                 onClick={() => {
                   navigator.clipboard.writeText(hex);
-                  alert(`Copied HEX: ${hex}`);
+                  toast.success(`Copied HEX: ${hex}`);
                 }}
               >
                 <span className="text-[9px] font-bold text-white bg-slate-950/60 px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
