@@ -1,7 +1,4 @@
-/**
- * Image Compression & Security Sanitization Utilities
- * Performs client-side downscaling, WebP conversion, and binary magic-byte validation.
- */
+import { recordUserActivity } from './telemetryTracker';
 
 export function formatBytes(bytes, decimals = 1) {
   if (!bytes || bytes === 0) return '0 B';
@@ -99,6 +96,15 @@ export async function compressImageToWebP(imageSource, maxDimension = 1920, qual
         const compressedSize = blob.size;
         const initialSize = originalSize || compressedSize * 2; // estimation if from URL
         const savingsPercent = Math.max(0, Math.round(((initialSize - compressedSize) / initialSize) * 100));
+        const savedBytes = Math.max(0, initialSize - compressedSize);
+
+        recordUserActivity({
+          category: 'optimization',
+          title: 'On-Device WebP Compression',
+          description: `Optimized to ${width}×${height} WebP (${formatBytes(compressedSize)}, -${savingsPercent}%)`,
+          bytesSaved: savedBytes,
+          status: 'success'
+        });
 
         resolve({
           blob,

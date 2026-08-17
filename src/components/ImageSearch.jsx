@@ -17,6 +17,7 @@ import ImageEditorCanvas from './image/ImageEditorCanvas';
 import ImageVectorStudio from './image/ImageVectorStudio';
 import ImageExport from './image/ImageExport';
 import { checkRateLimit } from '../utils/rateLimit';
+import { recordUserActivity } from '../utils/telemetryTracker';
 
 export default function ImageSearch({ onSendToPaletteLab, onSaveImage, isLoggedIn = false }) {
   const { theme } = useTheme();
@@ -64,7 +65,7 @@ export default function ImageSearch({ onSendToPaletteLab, onSaveImage, isLoggedI
 
   // Explicit Search Execution
   const handleExecuteSearch = async (targetQuery = searchQuery, targetOrientation = orientation, targetLicense = license) => {
-    const rateLimit = checkRateLimit('image_search', 10, 60000); // 10 searches per minute limit
+    const rateLimit = checkRateLimit('image_search', 50, 3600000); // 50 searches per hour limit
     if (!rateLimit.allowed) {
       toast.warning(`Rate limit exceeded! Please wait ${rateLimit.retryAfter} seconds before trying again.`);
       return;
@@ -74,10 +75,21 @@ export default function ImageSearch({ onSendToPaletteLab, onSaveImage, isLoggedI
     setSearchQuery(q);
     setLoading(true);
 
+    const startTime = performance.now();
     const res = await searchImagesWithFallback(q, { orientation: targetOrientation, license: targetLicense });
+    const duration = performance.now() - startTime;
+
     setImagesList(res.results);
     setProviderInfo(res.provider);
     
+    recordUserActivity({
+      category: 'search',
+      title: 'Stock Photo Search',
+      description: `Query: "${q}" • Found ${res.results.length} photos (${rateLimit.remaining} hourly searches left)`,
+      durationMs: duration,
+      status: 'success'
+    });
+
     // Auto-select first result if none selected or if new query
     if (res.results.length > 0) {
       setSelectedImage(res.results[0]);
