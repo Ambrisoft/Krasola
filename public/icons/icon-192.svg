@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="krasolaGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="bgGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <filter id="shadow192" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#6366f1" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect width="192" height="192" rx="42" fill="url(#bgGrad192)" />
+  <rect width="188" height="188" x="2" y="2" rx="40" fill="none" stroke="url(#krasolaGrad192)" stroke-width="2" stroke-opacity="0.4" />
+
+  <!-- Stylized K Glyph with shadow -->
+  <g filter="url(#shadow192)" transform="translate(46, 36)">
+    <!-- Vertical stem -->
+    <rect x="10" y="10" width="18" height="100" rx="9" fill="url(#krasolaGrad192)" />
+    <!-- Diagonal top arm -->
+    <path d="M22 62 L 68 18 C 72 14, 78 16, 78 22 C 78 26, 75 29, 70 34 L 32 72 Z" fill="#38bdf8" />
+    <!-- Diagonal bottom arm -->
+    <path d="M22 58 L 72 104 C 76 108, 80 110, 80 114 C 80 120, 74 122, 68 118 L 18 72 Z" fill="#10b981" />
+    <!-- Sparkle accent -->
+    <circle cx="84" cy="18" r="4" fill="#facc15" />
+  </g>
+</svg>

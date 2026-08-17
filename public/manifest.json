@@ -1,0 +1,48 @@
+{
+  "name": "Krasola - Unified Creative Suite",
+  "short_name": "Krasola",
+  "description": "Professional creative utility suite for Color Palettes, Vector Patterns, Stock Photography & Image Optimization.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#6366f1",
+  "orientation": "any",
+  "categories": ["design", "productivity", "utilities", "graphics"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Palette Lab",
+      "url": "/?tab=palette",
+      "description": "Generate and inspect harmonic color palettes"
+    },
+    {
+      "name": "Pattern Studio",
+      "url": "/?tab=pattern",
+      "description": "Create seamless geometric SVG patterns"
+    },
+    {
+      "name": "Image Studio",
+      "url": "/?tab=imagesearch",
+      "description": "Search and extract colors from stock images"
+    },
+    {
+      "name": "Saved Assets",
+      "url": "/?tab=saved",
+      "description": "Access your cloud vault and saved assets"
+    }
+  ]
+}
