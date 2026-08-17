@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   User, Mail, Lock, ShieldCheck, LogOut, RefreshCw, AlertCircle, 
   CheckCircle2, XCircle, Info, Shield, Database, Code, ChevronRight, 
-  Download, Eye, EyeOff, Laptop, Key, Trash2, Sliders, Globe, RefreshCcw
+  Download, Eye, EyeOff, Laptop, Key, Trash2, Sliders, Globe, RefreshCcw,
+  Sparkles
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
