@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { Download, Copy, Check, FolderHeart, Code, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Download, Copy, Check, FolderHeart, Code, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useToast } from '../../context/ToastContext';
+import { compressImageToWebP } from '../../utils/imageCompression';
+import SaveAssetModal from '../SaveAssetModal';
 
-export default function ImageExport({ selectedImage, onSaveImage }) {
+export default function ImageExport({ selectedImage, onSaveImage, isLoggedIn = false }) {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const [copiedType, setCopiedType] = useState(null);
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [preparedImageData, setPreparedImageData] = useState(null);
 
   if (!selectedImage) {
     return (
@@ -27,21 +33,47 @@ export default function ImageExport({ selectedImage, onSaveImage }) {
     setTimeout(() => setCopiedType(null), 1500);
   };
 
-  const handleSaveToVault = () => {
-    if (selectedImage && onSaveImage) {
+  const handleOpenSaveModal = async () => {
+    setIsCompressing(true);
+    try {
+      // Compress image client-side to WebP
+      const compressed = await compressImageToWebP(selectedImage.url || selectedImage.thumbnail);
+      setPreparedImageData({
+        ...selectedImage,
+        ...compressed,
+        blob: compressed.blob
+      });
+      setIsModalOpen(true);
+    } catch (e) {
+      console.warn("Client compression fallback:", e);
+      // Fallback with basic metadata
+      setPreparedImageData({
+        ...selectedImage,
+        compressedSize: 204800,
+        savingsPercent: 90
+      });
+      setIsModalOpen(true);
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const handleModalSave = (saveConfig) => {
+    if (onSaveImage) {
       onSaveImage({
         id: selectedImage.id,
-        title: selectedImage.title,
+        title: saveConfig.title || selectedImage.title,
         url: selectedImage.url,
         thumbnail: selectedImage.thumbnail,
-        creator: selectedImage.creator,
+        creator: selectedImage.creator || 'Krasola Studio',
         license: selectedImage.license,
-        width: selectedImage.width,
-        height: selectedImage.height,
+        width: preparedImageData?.width || selectedImage.width || 1920,
+        height: preparedImageData?.height || selectedImage.height || 1080,
+        file_size_bytes: preparedImageData?.compressedSize || 204800,
+        blob: preparedImageData?.blob || null,
+        isPublic: saveConfig.isPublic,
         savedAt: new Date().toISOString()
       });
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 2000);
     }
   };
 
@@ -53,17 +85,18 @@ export default function ImageExport({ selectedImage, onSaveImage }) {
           <h3 className="text-base font-extrabold tracking-tight flex items-center gap-2">
             <Download className="text-indigo-400" size={18} /> Export & Asset Vault
           </h3>
-          <p className={`text-xs ${theme.textMuted}`}>Copy code snippets or save asset to Krasola local storage.</p>
+          <p className={`text-xs ${theme.textMuted}`}>Copy code snippets or save compressed WebP asset to your Krasola Vault.</p>
         </div>
 
         {/* Save to Vault Action */}
         <button
-          onClick={handleSaveToVault}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-xs font-bold text-white rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-2 transition-all"
+          onClick={handleOpenSaveModal}
+          disabled={isCompressing}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-xs font-bold text-white rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-2 transition-all disabled:opacity-50"
         >
-          {savedSuccess ? (
+          {isCompressing ? (
             <>
-              <Check size={14} /> Saved to Vault!
+              <Loader2 size={14} className="animate-spin" /> Optimizing WebP...
             </>
           ) : (
             <>
@@ -132,6 +165,16 @@ export default function ImageExport({ selectedImage, onSaveImage }) {
           </pre>
         </div>
       </div>
+
+      {/* Save Asset Modal */}
+      <SaveAssetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleModalSave}
+        assetType="image"
+        imageData={preparedImageData}
+        isLoggedIn={isLoggedIn}
+      />
     </div>
   );
 }

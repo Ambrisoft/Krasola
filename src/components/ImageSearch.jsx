@@ -9,6 +9,7 @@ import {
   ChevronRight 
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { searchImagesWithFallback } from './image/imageUtils';
 import ImageSearchHub from './image/ImageSearchHub';
 import ImageColorExtractor from './image/ImageColorExtractor';
@@ -17,8 +18,9 @@ import ImageVectorStudio from './image/ImageVectorStudio';
 import ImageExport from './image/ImageExport';
 import { checkRateLimit } from '../utils/rateLimit';
 
-export default function ImageSearch({ onSendToPaletteLab, onSaveImage }) {
+export default function ImageSearch({ onSendToPaletteLab, onSaveImage, isLoggedIn = false }) {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const [activeSubTab, setActiveSubTab] = useState('search');
   const [isSubSidebarCollapsed, setIsSubSidebarCollapsed] = useState(false);
 
@@ -64,7 +66,7 @@ export default function ImageSearch({ onSendToPaletteLab, onSaveImage }) {
   const handleExecuteSearch = async (targetQuery = searchQuery, targetOrientation = orientation, targetLicense = license) => {
     const rateLimit = checkRateLimit('image_search', 10, 60000); // 10 searches per minute limit
     if (!rateLimit.allowed) {
-      alert(`Rate limit exceeded! Please wait ${rateLimit.retryAfter} seconds before trying again.`);
+      toast.warning(`Rate limit exceeded! Please wait ${rateLimit.retryAfter} seconds before trying again.`);
       return;
     }
 
@@ -205,6 +207,7 @@ export default function ImageSearch({ onSendToPaletteLab, onSaveImage }) {
           <ImageExport
             selectedImage={selectedImage}
             onSaveImage={onSaveImage}
+            isLoggedIn={isLoggedIn}
           />
         )}
       </main>
