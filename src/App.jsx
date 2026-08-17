@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
+import { useToast } from './context/ToastContext';
 import Home from './components/Home';
 import PaletteLab from './components/PaletteLab';
 import PatternStudio from './components/PatternStudio';
@@ -10,7 +11,7 @@ import ImageSearch from './components/ImageSearch';
 import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
 import Account from './components/Account';
-import { supabase, isSupabaseConfigured } from './utils/supabaseClient';
+import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 
 export default function App() {
@@ -51,33 +52,29 @@ export default function App() {
     localStorage.setItem('pref_default_tab', defaultTab);
   }, [defaultTab]);
   
-  // Consume global ThemeContext
+  // Consume global ThemeContext and ToastContext
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
+  const { toast, showToast } = useToast();
 
   // User auth state tracker
   const [user, setUser] = useState(null);
   const [cloudPalettes, setCloudPalettes] = useState([]);
   const [cloudPatterns, setCloudPatterns] = useState([]);
-  const [toastMessage, setToastMessage] = useState(null);
+  const [cloudImages, setCloudImages] = useState([]);
 
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  const fetchCloudAssets = async () => {
-    if (isSupabaseConfigured && user) {
+  const fetchCloudAssets = async (currentUser = user) => {
+    if (isSupabaseConfigured && currentUser) {
       try {
         const { data: palettes } = await supabase
           .from('community_palettes')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', currentUser.id);
         if (palettes) setCloudPalettes(palettes);
 
         const { data: patterns } = await supabase
           .from('community_patterns')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', currentUser.id);
         if (patterns) {
           const normalized = patterns.map(p => ({
             id: p.id,
@@ -85,6 +82,7 @@ export default function App() {
             username: p.username,
             name: p.name,
             patternType: p.pattern_type,
+            is_public: p.is_public !== false,
             settings: {
               width: p.width,
               height: p.height,
@@ -98,29 +96,134 @@ export default function App() {
           }));
           setCloudPatterns(normalized);
         }
+
+        const images = await fetchUserImages(currentUser);
+        if (images) setCloudImages(images);
       } catch (e) {
         console.warn("Error fetching cloud assets", e);
       }
     } else {
       setCloudPalettes([]);
       setCloudPatterns([]);
+      setCloudImages([]);
+    }
+  };
+
+  const syncGuestAssetsToCloud = async (currentUser) => {
+    if (!isSupabaseConfigured || !currentUser) return;
+    
+    try {
+      const localPalettes = JSON.parse(localStorage.getItem('saved_palettes') || '[]');
+      const localPatterns = JSON.parse(localStorage.getItem('saved_patterns') || '[]');
+      const localImages = JSON.parse(localStorage.getItem('saved_images') || '[]');
+
+      if (localPalettes.length === 0 && localPatterns.length === 0 && localImages.length === 0) return;
+
+      const username = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'Anonymous';
+      let syncedCount = 0;
+
+      // 1. Sync guest palettes
+      if (localPalettes.length > 0) {
+        const { data: existingPalettes } = await supabase
+          .from('community_palettes')
+          .select('name')
+          .eq('user_id', currentUser.id);
+        
+        const existingNames = new Set((existingPalettes || []).map(p => p.name));
+
+        const palettesToInsert = localPalettes.filter(p => !existingNames.has(p.name)).map(p => ({
+          user_id: currentUser.id,
+          username: username,
+          name: p.name,
+          colors: p.colors,
+          mode: p.mode || 'Custom',
+          is_public: p.is_public === true,
+          likes: 0
+        }));
+
+        if (palettesToInsert.length > 0) {
+          const { error } = await supabase.from('community_palettes').insert(palettesToInsert);
+          if (!error) {
+            syncedCount += palettesToInsert.length;
+          }
+        }
+      }
+
+      // 2. Sync guest patterns
+      if (localPatterns.length > 0) {
+        const { data: existingPatterns } = await supabase
+          .from('community_patterns')
+          .select('name')
+          .eq('user_id', currentUser.id);
+        
+        const existingNames = new Set((existingPatterns || []).map(p => p.name));
+
+        const patternsToInsert = localPatterns.filter(p => !existingNames.has(p.name)).map(p => ({
+          user_id: currentUser.id,
+          username: username,
+          name: p.name,
+          pattern_type: p.patternType || 'dots',
+          width: p.settings?.width || 40,
+          height: p.settings?.height || 40,
+          scale: p.settings?.scale || 1,
+          stroke: p.settings?.stroke || 2,
+          angle: p.settings?.angle || 0,
+          bg: p.settings?.bg || '#0f172a',
+          color1: p.settings?.color1 || '#6366f1',
+          color2: p.settings?.color2 || '#38bdf8',
+          is_public: p.is_public === true
+        }));
+
+        if (patternsToInsert.length > 0) {
+          const { error } = await supabase.from('community_patterns').insert(patternsToInsert);
+          if (!error) {
+            syncedCount += patternsToInsert.length;
+          }
+        }
+      }
+
+      // 3. Clear local storage after successful sync
+      localStorage.setItem('saved_palettes', '[]');
+      localStorage.setItem('saved_patterns', '[]');
+      setSavedPalettes([]);
+      setSavedPatterns([]);
+
+      if (syncedCount > 0) {
+        showToast(`Synced ${syncedCount} guest creation${syncedCount > 1 ? 's' : ''} to your account!`);
+      }
+    } catch (e) {
+      console.warn("Auto-sync error on login:", e);
     }
   };
 
   useEffect(() => {
     if (isSupabaseConfigured) {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        setUser(session?.user || null);
+        const currentUser = session?.user || null;
+        setUser(currentUser);
+        if (currentUser) {
+          syncGuestAssetsToCloud(currentUser).then(() => fetchCloudAssets(currentUser));
+        }
       });
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user || null);
+        const currentUser = session?.user || null;
+        setUser(currentUser);
+        if (currentUser) {
+          syncGuestAssetsToCloud(currentUser).then(() => fetchCloudAssets(currentUser));
+        } else {
+          setCloudPalettes([]);
+          setCloudPatterns([]);
+          setCloudImages([]);
+        }
       });
       return () => subscription.unsubscribe();
     }
   }, []);
 
   useEffect(() => {
-    fetchCloudAssets();
+    if (user) {
+      fetchCloudAssets(user);
+    }
   }, [user]);
 
   // Saved configs states (Local Storage fallback)
@@ -161,6 +264,7 @@ export default function App() {
   // Combined items list
   const displayedPalettes = [...savedPalettes, ...cloudPalettes];
   const displayedPatterns = [...savedPatterns, ...cloudPatterns];
+  const displayedImages = [...savedImages, ...cloudImages];
 
   // Operations
   const handleSavePalette = async (newPalette) => {
@@ -295,10 +399,14 @@ export default function App() {
 
   const handleTogglePublicAsset = async (assetType, item) => {
     if (!user) {
-      showToast("Please sign in to publish your creations to the public Community Gallery!");
+      toast.warning("Please sign in to publish your creations to the public Community Gallery!");
       return;
     }
-    const table = assetType === 'palette' ? 'community_palettes' : 'community_patterns';
+    const table = assetType === 'palette' 
+      ? 'community_palettes' 
+      : assetType === 'pattern' 
+        ? 'community_patterns' 
+        : 'user_images';
     const newStatus = !item.is_public;
 
     if (item.user_id && isSupabaseConfigured) {
@@ -314,24 +422,29 @@ export default function App() {
         // Optimistically update cloud state for instant UI re-render
         if (assetType === 'palette') {
           setCloudPalettes(prev => prev.map(p => p.id === item.id ? { ...p, is_public: newStatus } : p));
-        } else {
+        } else if (assetType === 'pattern') {
           setCloudPatterns(prev => prev.map(p => p.id === item.id ? { ...p, is_public: newStatus } : p));
+        } else {
+          setCloudImages(prev => prev.map(p => p.id === item.id ? { ...p, is_public: newStatus } : p));
         }
 
         await fetchCloudAssets();
-        showToast(newStatus ? `Published "${item.name}" to Community Gallery!` : `Made "${item.name}" Private.`);
+        toast.success(newStatus ? `Published "${item.name || item.title}" to Community Gallery!` : `Made "${item.name || item.title}" Private.`);
       } catch (e) {
         console.error("Failed to toggle visibility:", e);
-        showToast("Failed to update visibility status.");
+        toast.error("Failed to update visibility status.");
       }
     } else {
       // Local offline item being toggled by logged-in user
       if (assetType === 'palette') {
         await handleSavePalette({ ...item, isPublic: newStatus });
         setSavedPalettes(prev => prev.filter(p => p.id !== item.id));
-      } else {
+      } else if (assetType === 'pattern') {
         await handleSavePattern({ ...item, isPublic: newStatus });
         setSavedPatterns(prev => prev.filter(p => p.id !== item.id));
+      } else {
+        await handleSaveImage({ ...item, isPublic: newStatus });
+        setSavedImages(prev => prev.filter(p => p.id !== item.id));
       }
     }
   };
@@ -343,30 +456,74 @@ export default function App() {
         const { error } = await supabase.from('community_patterns').delete().eq('id', item.id);
         if (error) throw error;
         fetchCloudAssets();
-        showToast("Deleted from cloud vault!");
+        toast.success("Deleted from cloud vault!");
       } catch (e) {
         console.error(e);
       }
     } else if (item) {
       setSavedPatterns(prev => prev.filter(p => p.id !== item.id));
-      showToast("Deleted from local vault.");
+      toast.info("Deleted from local vault.");
     }
   };
 
   const handleSaveIcon = (newIcon) => {
     setSavedIcons(prev => [...prev, newIcon]);
-    showToast("Saved icon!");
+    toast.success("Saved icon!");
   };
   const handleDeleteIcon = (index) => {
     setSavedIcons(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSaveImage = (newImage) => {
-    setSavedImages(prev => [...prev, newImage]);
-    showToast("Saved image!");
+  const handleSaveImage = async (newImage) => {
+    if (user && isSupabaseConfigured) {
+      try {
+        if (newImage.blob) {
+          await uploadUserImage(newImage.blob, {
+            title: newImage.title || 'Untitled Artwork',
+            creator: newImage.creator || 'Krasola Studio',
+            width: newImage.width || 1920,
+            height: newImage.height || 1080,
+            isPublic: newImage.isPublic === true
+          }, user);
+          await fetchCloudAssets(user);
+          toast.success(
+            newImage.isPublic
+              ? `Saved & published "${newImage.title}" to Community Gallery!`
+              : `Saved private image "${newImage.title}" to your cloud vault!`
+          );
+          return;
+        }
+      } catch (e) {
+        console.warn("Cloud image save error:", e);
+        toast.error(e.message || "Failed to upload image to cloud storage.");
+        return;
+      }
+    }
+
+    // Local fallback
+    const localEntry = {
+      ...newImage,
+      id: newImage.id || Math.random().toString(36).substring(2),
+      is_public: false
+    };
+    setSavedImages(prev => [...prev, localEntry]);
+    toast.info(`Saved "${newImage.title}" to local vault!`);
   };
-  const handleDeleteImage = (index) => {
-    setSavedImages(prev => prev.filter((_, i) => i !== index));
+
+  const handleDeleteImage = async (index) => {
+    const item = displayedImages[index];
+    if (item && item.user_id && isSupabaseConfigured) {
+      try {
+        await deleteUserImage(item.id, item.storage_path, user);
+        await fetchCloudAssets(user);
+        toast.success("Deleted image from cloud vault!");
+      } catch (e) {
+        toast.error(`Delete failed: ${e.message}`);
+      }
+    } else if (item) {
+      setSavedImages(prev => prev.filter(p => p.id !== item.id));
+      toast.info("Deleted from local vault.");
+    }
   };
 
   const copyHexToClipboard = (hex) => {
@@ -716,6 +873,7 @@ export default function App() {
                   setActiveTab('palette');
                 }}
                 onSaveImage={handleSaveImage}
+                isLoggedIn={!!user}
               />
             )}
 
@@ -724,7 +882,7 @@ export default function App() {
                 savedPalettes={displayedPalettes}
                 savedPatterns={displayedPatterns}
                 savedIcons={savedIcons}
-                savedImages={savedImages}
+                savedImages={displayedImages}
                 onDeletePalette={handleDeletePalette}
                 onDeletePattern={handleDeletePattern}
                 onDeleteIcon={handleDeleteIcon}
@@ -767,16 +925,6 @@ export default function App() {
           </div>
         </main>
       </div>
-
-      {/* Dynamic Glassmorphic Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-fadeIn">
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-indigo-600 border border-indigo-500/20 text-white text-xs font-bold shadow-lg shadow-indigo-600/30">
-            <Check size={14} className="shrink-0" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
