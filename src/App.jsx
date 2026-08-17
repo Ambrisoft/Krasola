@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
@@ -11,8 +11,10 @@ import ImageSearch from './components/ImageSearch';
 import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
 import Account from './components/Account';
+import Monitoring from './components/Monitoring';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
+import { recordUserActivity } from './utils/telemetryTracker';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -292,6 +294,12 @@ export default function App() {
         }]).select();
         if (!error && data) {
           fetchCloudAssets();
+          recordUserActivity({
+            category: 'creation',
+            title: 'Saved Color Palette',
+            description: `Saved "${paletteName}" (${newPalette.colors?.length || 5} swatches • ${isPublicChoice ? 'Public' : 'Private'})`,
+            status: 'success'
+          });
           showToast(
             isPublicChoice
               ? `Saved & published palette "${paletteName}" to Community!`
@@ -311,6 +319,12 @@ export default function App() {
       id: newPalette.id || Math.random().toString(36).substring(2)
     };
     setSavedPalettes(prev => [...prev, localEntry]);
+    recordUserActivity({
+      category: 'creation',
+      title: 'Saved Color Palette (Local)',
+      description: `Saved "${paletteName}" to offline vault`,
+      status: 'info'
+    });
     showToast(`Saved private palette "${paletteName}" to local vault!`);
   };
 
@@ -375,6 +389,12 @@ export default function App() {
         }]).select();
         if (!error && data) {
           fetchCloudAssets();
+          recordUserActivity({
+            category: 'creation',
+            title: 'Saved Vector Pattern',
+            description: `Saved "${patternName}" (${newPattern.patternType || 'dots'} • ${isPublicChoice ? 'Public' : 'Private'})`,
+            status: 'success'
+          });
           showToast(
             isPublicChoice
               ? `Saved & published pattern "${patternName}" to Community!`
@@ -394,6 +414,12 @@ export default function App() {
       id: newPattern.id || Math.random().toString(36).substring(2)
     };
     setSavedPatterns(prev => [...prev, localEntry]);
+    recordUserActivity({
+      category: 'creation',
+      title: 'Saved Vector Pattern (Local)',
+      description: `Saved "${patternName}" to offline vault`,
+      status: 'info'
+    });
     showToast(`Saved private pattern "${patternName}" to local vault!`);
   };
 
@@ -486,6 +512,12 @@ export default function App() {
             isPublic: newImage.isPublic === true
           }, user);
           await fetchCloudAssets(user);
+          recordUserActivity({
+            category: 'storage',
+            title: 'Uploaded Cloud Image',
+            description: `Uploaded "${newImage.title}" (${newImage.width}×${newImage.height} • ${newImage.isPublic ? 'Public' : 'Private'})`,
+            status: 'success'
+          });
           toast.success(
             newImage.isPublic
               ? `Saved & published "${newImage.title}" to Community Gallery!`
@@ -507,6 +539,12 @@ export default function App() {
       is_public: false
     };
     setSavedImages(prev => [...prev, localEntry]);
+    recordUserActivity({
+      category: 'storage',
+      title: 'Saved Image (Local)',
+      description: `Saved "${newImage.title}" to offline vault`,
+      status: 'info'
+    });
     toast.info(`Saved "${newImage.title}" to local vault!`);
   };
 
@@ -542,6 +580,7 @@ export default function App() {
     icon: 'Icon Finder',
     imagesearch: 'Image Search Studio',
     saved: 'Saved Assets',
+    monitoring: 'Activity & Usage Hub',
     account: 'Account Studio',
     settings: 'Settings & Configurations'
   };
@@ -694,6 +733,23 @@ export default function App() {
                 )
               )}
             </button>
+
+            <button
+              onClick={() => setActiveTab('monitoring')}
+              title="Activity & Usage Hub"
+              className={`w-full flex items-center rounded-xl text-sm font-semibold transition-all ${
+                isCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3'
+              } ${
+                activeTab === 'monitoring'
+                  ? theme.accent
+                  : theme.isDark
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Activity size={18} />
+              {!isCollapsed && <span>Usage & Activity</span>}
+            </button>
           </nav>
         </div>
 
@@ -714,6 +770,21 @@ export default function App() {
               }`}
             >
               <User size={14} />
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('monitoring');
+              }}
+              title="Activity & Usage"
+              className={`p-1.5 rounded-xl border transition-all ${
+                activeTab === 'monitoring'
+                  ? theme.accent
+                  : theme.isDark
+                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+              }`}
+            >
+              <Activity size={14} />
             </button>
             <button
               onClick={() => {
@@ -890,6 +961,15 @@ export default function App() {
                 onLoadPalette={handleLoadPalette}
                 onTogglePublic={handleTogglePublicAsset}
                 user={user}
+              />
+            )}
+
+            {activeTab === 'monitoring' && (
+              <Monitoring
+                user={user}
+                savedPalettes={displayedPalettes}
+                savedPatterns={displayedPatterns}
+                savedImages={displayedImages}
               />
             )}
 
