@@ -154,3 +154,135 @@ export async function saveCommunityPattern({ name, patternType, settings, userna
   saveMockTable('community_patterns', list);
   return newPattern;
 }
+
+/**
+ * Image Storage & Metadata Operations
+ */
+
+export async function uploadUserImage(imageBlob, { title, creator = 'Krasola Studio', width = 1920, height = 1080, isPublic = false }, user) {
+  if (!isSupabaseConfigured || !user) {
+    throw new Error("Supabase is not configured or user is unauthenticated.");
+  }
+
+  const imageId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+  const storagePath = `vault/${user.id}/${imageId}.webp`;
+
+  // 1. Upload binary WebP Blob to Supabase Storage bucket 'krasola-images'
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('krasola-images')
+    .upload(storagePath, imageBlob, {
+      contentType: 'image/webp',
+      cacheControl: '3600',
+      upsert: true
+    });
+
+  if (uploadError) {
+    throw new Error(`Storage upload failed: ${uploadError.message}`);
+  }
+
+  // 2. Retrieve public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('krasola-images')
+    .getPublicUrl(storagePath);
+
+  const username = user.user_metadata?.display_name || user.email?.split('@')[0] || 'Anonymous';
+
+  // 3. Insert metadata record into PostgreSQL public.user_images (triggers quota enforcement)
+  const { data: record, error: metaError } = await supabase
+    .from('user_images')
+    .insert([{
+      id: imageId,
+      user_id: user.id,
+      username: username,
+      title: title || 'Untitled Artwork',
+      creator: creator,
+      storage_path: storagePath,
+      public_url: publicUrl,
+      width: width,
+      height: height,
+      file_size_bytes: imageBlob.size,
+      is_public: isPublic,
+      likes: 0
+    }])
+    .select()
+    .single();
+
+  if (metaError) {
+    // If metadata insertion fails (e.g. quota limit reached), clean up uploaded storage file
+    await supabase.storage.from('krasola-images').remove([storagePath]);
+    throw new Error(metaError.message);
+  }
+
+  return record;
+}
+
+export async function fetchUserImages(user) {
+  if (!isSupabaseConfigured || !user) return [];
+  try {
+    const { data, error } = await supabase
+      .from('user_images')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) return data;
+  } catch (e) {
+    console.warn("Error fetching user images:", e);
+  }
+  return [];
+}
+
+export async function deleteUserImage(imageId, storagePath, user) {
+  if (!isSupabaseConfigured || !user) return false;
+  try {
+    // 1. Delete from PostgreSQL metadata table (triggers quota reduction)
+    const { error: metaErr } = await supabase
+      .from('user_images')
+      .delete()
+      .eq('id', imageId)
+      .eq('user_id', user.id);
+
+    if (metaErr) throw metaErr;
+
+    // 2. Delete binary from storage bucket
+    if (storagePath) {
+      await supabase.storage.from('krasola-images').remove([storagePath]);
+    }
+    return true;
+  } catch (e) {
+    console.error("Error deleting image:", e);
+    throw e;
+  }
+}
+
+export async function fetchCommunityImages() {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const { data, error } = await supabase
+      .from('user_images')
+      .select('*')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) return data;
+  } catch (e) {
+    console.warn("Error fetching community images:", e);
+  }
+  return [];
+}
+
+export async function getUserStorageQuota(user) {
+  if (!isSupabaseConfigured || !user) return null;
+  try {
+    const { data, error } = await supabase
+      .from('user_storage_quotas')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!error && data) return data;
+  } catch (e) {
+    console.warn("Error loading user storage quota:", e);
+  }
+  return { used_bytes: 0, max_bytes: 52428800, image_count: 0, max_images: 30 };
+}
