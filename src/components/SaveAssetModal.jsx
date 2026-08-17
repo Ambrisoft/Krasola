@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { X, Lock, Globe, Sparkles, Check, Info, Shield } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { getUniquePaletteName, getUniquePatternName } from '../utils/namingUtils';
+import { formatBytes } from '../utils/imageCompression';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
 export default function SaveAssetModal({
   isOpen,
   onClose,
   onSave,
-  assetType, // 'palette' or 'pattern'
+  assetType, // 'palette', 'pattern', or 'image'
   colors = [],
   patternData = null,
+  imageData = null,
   existingNames = [],
   isLoggedIn = false
 }) {
@@ -22,10 +24,14 @@ export default function SaveAssetModal({
   // Generate initial smart name when modal opens (Default to Private Vault for 100% user choice)
   useEffect(() => {
     if (isOpen) {
-      generateSmartName();
+      if (assetType === 'image' && imageData?.title) {
+        setAssetName(imageData.title);
+      } else {
+        generateSmartName();
+      }
       setIsPublic(false); // Always default to Private Vault; user must explicitly choose Public
     }
-  }, [isOpen, assetType, colors, patternData]);
+  }, [isOpen, assetType, colors, patternData, imageData]);
 
   const generateSmartName = async () => {
     setIsGenerating(true);
@@ -47,9 +53,11 @@ export default function SaveAssetModal({
           isSupabaseConfigured ? supabase : null
         );
         setAssetName(name);
+      } else if (assetType === 'image' && imageData?.title) {
+        setAssetName(imageData.title);
       }
     } catch (e) {
-      setAssetName(assetType === 'palette' ? 'Custom Palette' : 'Custom Pattern');
+      setAssetName(assetType === 'palette' ? 'Custom Palette' : assetType === 'pattern' ? 'Custom Pattern' : 'Custom Artwork');
     } finally {
       setIsGenerating(false);
     }
@@ -62,7 +70,9 @@ export default function SaveAssetModal({
     if (!assetName.trim()) return;
     onSave({
       name: assetName.trim(),
-      isPublic: isLoggedIn ? isPublic : false
+      title: assetName.trim(),
+      isPublic: isLoggedIn ? isPublic : false,
+      imageData: imageData
     });
     onClose();
   };
@@ -81,7 +91,7 @@ export default function SaveAssetModal({
           <div>
             <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
               <Sparkles size={18} className="text-indigo-400" />
-              <span>Save New {assetType === 'palette' ? 'Palette' : 'Pattern'}</span>
+              <span>Save New {assetType === 'palette' ? 'Palette' : assetType === 'pattern' ? 'Pattern' : 'Image'}</span>
             </h3>
             <p className={`text-xs ${theme.textMuted}`}>
               Configure visibility & details before saving to your vault.
@@ -100,14 +110,21 @@ export default function SaveAssetModal({
 
         {/* Asset Visual Preview Box */}
         <div className="space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Asset Preview</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Asset Preview</span>
+            {assetType === 'image' && imageData?.compressedSize && (
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                WebP • {formatBytes(imageData.compressedSize)} {imageData.savingsPercent ? `(-${imageData.savingsPercent}%)` : ''}
+              </span>
+            )}
+          </div>
           {assetType === 'palette' ? (
             <div className="flex h-12 rounded-xl overflow-hidden border border-slate-700/50 shadow-inner">
               {colors.map((hex, idx) => (
                 <div key={idx} style={{ backgroundColor: hex }} className="flex-1 h-full" title={hex} />
               ))}
             </div>
-          ) : (
+          ) : assetType === 'pattern' ? (
             <div 
               className="h-16 rounded-xl border border-slate-700/50 flex items-center justify-center text-xs font-bold text-slate-300"
               style={{ backgroundColor: patternData?.settings?.bg || '#0f172a' }}
@@ -115,6 +132,17 @@ export default function SaveAssetModal({
               <span className="px-3 py-1 rounded-full bg-black/40 border border-white/10 backdrop-blur-sm uppercase tracking-wider text-[10px]">
                 {patternData?.patternType || 'Pattern'} Template
               </span>
+            </div>
+          ) : (
+            <div className="h-28 rounded-xl border border-slate-700/50 overflow-hidden relative bg-slate-900 flex items-center justify-center">
+              <img 
+                src={imageData?.thumbnail || imageData?.url || imageData?.dataUrl} 
+                alt={assetName} 
+                className="w-full h-full object-cover" 
+              />
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[9px] font-bold text-slate-200">
+                {imageData?.width || 1920} × {imageData?.height || 1080}
+              </div>
             </div>
           )}
         </div>
