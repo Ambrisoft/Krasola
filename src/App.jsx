@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
@@ -12,9 +12,11 @@ import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
 import Account from './components/Account';
 import Monitoring from './components/Monitoring';
+import PwaInstallModal from './components/pwa/PwaInstallModal';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 import { recordUserActivity } from './utils/telemetryTracker';
+import { usePwaInstall } from './utils/pwaManager';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -23,6 +25,9 @@ export default function App() {
   const [activePalette, setActivePalette] = useState(['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [copiedHex, setCopiedHex] = useState(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { canInstall, isInstalled } = usePwaInstall();
 
   useEffect(() => {
     sessionStorage.setItem('current_active_tab', activeTab);
@@ -587,8 +592,8 @@ export default function App() {
 
   return (
     <div className={`flex h-screen w-screen overflow-hidden font-sans transition-all duration-300 ${theme.bg} ${theme.text}`}>
-      {/* Sidebar navigation */}
-      <aside className={`${isCollapsed ? 'w-20' : 'w-64'} border-r flex flex-col justify-between shrink-0 transition-all duration-300 ${theme.sidebar}`}>
+      {/* Desktop Sidebar navigation */}
+      <aside className={`${isCollapsed ? 'w-20' : 'w-64'} border-r hidden md:flex flex-col justify-between shrink-0 transition-all duration-300 ${theme.sidebar}`}>
         <div className={`p-4 space-y-7 overflow-y-auto ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
           {/* Logo / Header with Collapse Button */}
           <div className={`flex items-center justify-between w-full ${isCollapsed ? 'flex-col gap-4' : ''}`}>
@@ -753,65 +758,110 @@ export default function App() {
           </nav>
         </div>
 
-        {/* Footer info containing settings button at the corner */}
-        <div className={`p-3 border-t transition-colors duration-300 ${theme.border} flex items-center ${isCollapsed ? 'flex-col gap-1.5 justify-center' : 'justify-between px-4'}`}>
-          <div className="flex gap-1.5">
+        {/* Desktop Sidebar Footer with Install App Banner */}
+        <div className={`p-3 border-t transition-colors duration-300 ${theme.border} space-y-2`}>
+          {!isInstalled && !isCollapsed && (
             <button
-              onClick={() => {
-                setActiveTab('account');
-              }}
-              title="Account Studio"
-              className={`p-1.5 rounded-xl border transition-all ${
-                activeTab === 'account'
-                  ? theme.accent
-                  : theme.isDark
-                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
-              }`}
+              onClick={() => setIsInstallModalOpen(true)}
+              className="w-full py-2 px-3 bg-gradient-to-r from-indigo-600/20 to-sky-600/20 hover:from-indigo-600/30 hover:to-sky-600/30 border border-indigo-500/30 text-indigo-300 text-xs font-bold rounded-xl flex items-center justify-between transition-all group"
             >
-              <User size={14} />
+              <span className="flex items-center gap-1.5">
+                <Download size={13} className="text-indigo-400 group-hover:translate-y-0.5 transition-transform" />
+                Install App
+              </span>
+              <span className="text-[10px] font-mono bg-indigo-500/20 px-1.5 py-0.5 rounded text-indigo-300">PWA</span>
             </button>
-            <button
-              onClick={() => {
-                setActiveTab('monitoring');
-              }}
-              title="Activity & Usage"
-              className={`p-1.5 rounded-xl border transition-all ${
-                activeTab === 'monitoring'
-                  ? theme.accent
-                  : theme.isDark
-                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
-              }`}
-            >
-              <Activity size={14} />
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('settings');
-              }}
-              title="Settings"
-              className={`p-1.5 rounded-xl border transition-all ${
-                activeTab === 'settings'
-                  ? theme.accent
-                  : theme.isDark
-                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
-              }`}
-            >
-              <Settings size={14} />
-            </button>
+          )}
+
+          <div className={`flex items-center ${isCollapsed ? 'flex-col gap-1.5 justify-center' : 'justify-between px-1'}`}>
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => setActiveTab('account')}
+                title="Account Studio"
+                className={`p-1.5 rounded-xl border transition-all ${
+                  activeTab === 'account'
+                    ? theme.accent
+                    : theme.isDark
+                      ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                }`}
+              >
+                <User size={14} />
+              </button>
+              <button
+                onClick={() => setActiveTab('monitoring')}
+                title="Activity & Usage"
+                className={`p-1.5 rounded-xl border transition-all ${
+                  activeTab === 'monitoring'
+                    ? theme.accent
+                    : theme.isDark
+                      ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                }`}
+              >
+                <Activity size={14} />
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                title="Settings"
+                className={`p-1.5 rounded-xl border transition-all ${
+                  activeTab === 'settings'
+                    ? theme.accent
+                    : theme.isDark
+                      ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                }`}
+              >
+                <Settings size={14} />
+              </button>
+            </div>
+            <span className="text-[10px] text-slate-500 font-bold">
+              {isCollapsed ? 'v1.0' : 'Krasola v1.0.0'}
+            </span>
           </div>
-          <span className="text-[10px] text-slate-500 font-bold">
-            {isCollapsed ? 'v1.0' : 'Krasola v1.0.0'}
-          </span>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Global Dashboard Header */}
-        <header className={`h-16 border-b px-6 flex items-center justify-between shrink-0 transition-colors duration-300 ${
+        {/* Mobile Header (Shown on < 768px) */}
+        <header className={`md:hidden h-14 border-b px-4 flex items-center justify-between shrink-0 z-30 transition-colors duration-300 ${
+          theme.isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/95 border-slate-200'
+        } backdrop-blur-md`}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-black text-base shrink-0">
+              K
+            </div>
+            <div>
+              <h1 className="text-sm font-extrabold tracking-tight leading-none">Krasola</h1>
+              <span className={`text-[9px] font-bold tracking-wider uppercase ${theme.textMuted}`}>{tabTitles[activeTab]}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {!isInstalled && (
+              <button
+                onClick={() => setIsInstallModalOpen(true)}
+                className="py-1 px-2.5 bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white text-[11px] font-bold rounded-xl flex items-center gap-1 shadow-sm transition-all"
+              >
+                <Download size={12} /> Install
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`p-2 rounded-xl border transition-all ${
+                theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-700'
+              }`}
+              title="Open Menu"
+            >
+              <Menu size={16} />
+            </button>
+          </div>
+        </header>
+
+        {/* Global Desktop Header (Shown on >= 768px) */}
+        <header className={`hidden md:flex h-16 border-b px-6 items-center justify-between shrink-0 transition-colors duration-300 ${
           theme.isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
         }`}>
           {/* Left: Active view breadcrumb */}
@@ -823,7 +873,7 @@ export default function App() {
 
           {/* Center: Global active palette preview strip */}
           {activePalette.length > 0 && (
-            <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.textMuted} flex items-center gap-1`}>
                 Active Palette:
               </span>
@@ -849,8 +899,18 @@ export default function App() {
             </div>
           )}
 
-          {/* Right: Theme dropdown selector + Active helper */}
-          <div className="flex items-center gap-4">
+          {/* Right: Install button + Theme dropdown selector */}
+          <div className="flex items-center gap-3">
+            {!isInstalled && (
+              <button
+                onClick={() => setIsInstallModalOpen(true)}
+                className="py-1.5 px-3 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all"
+                title="Install Krasola as a standalone Desktop App"
+              >
+                <Download size={13} /> Install App
+              </button>
+            )}
+
             {/* Quick Keyboard shortcut helpers */}
             {activeTab === 'palette' && (
               <div className={`hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-semibold ${
@@ -861,7 +921,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Global Theme selector moved to header */}
+            {/* Global Theme selector */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
@@ -896,8 +956,8 @@ export default function App() {
           </div>
         </header>
 
-        {/* Main Content Workspace */}
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto h-full relative">
+        {/* Main Content Workspace with Adaptive Padding for Mobile Bottom Bar */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto h-full relative pb-24 md:pb-8">
           {/* Glow Effects */}
           {enableGlow && (
             <div className={`absolute top-0 right-1/4 w-[500px] h-[500px] ${theme.glow} rounded-full blur-[120px] pointer-events-none transition-all duration-300`} />
@@ -1005,6 +1065,189 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Fixed for < 768px with Safe Area Padding) */}
+      <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-xl transition-all ${
+        theme.isDark ? 'bg-slate-950/90 border-slate-850' : 'bg-white/95 border-slate-200 shadow-2xl'
+      } pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] pt-1.5 px-2 flex items-center justify-around`}>
+        <button
+          onClick={() => setActiveTab('home')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === 'home' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <HomeIcon size={18} />
+          <span className="text-[9px] mt-0.5">Home</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('palette')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === 'palette' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Palette size={18} />
+          <span className="text-[9px] mt-0.5">Palette</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('pattern')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === 'pattern' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Layers size={18} />
+          <span className="text-[9px] mt-0.5">Pattern</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('imagesearch')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === 'imagesearch' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <ImageIcon size={18} />
+          <span className="text-[9px] mt-0.5">Image</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('saved')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
+            activeTab === 'saved' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <FolderHeart size={18} />
+          <span className="text-[9px] mt-0.5">Saved</span>
+          {totalSavedCount > 0 && (
+            <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-indigo-500" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            ['monitoring', 'account', 'settings', 'icon'].includes(activeTab)
+              ? 'text-indigo-400 font-bold scale-105'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Menu size={18} />
+          <span className="text-[9px] mt-0.5">More</span>
+        </button>
+      </nav>
+
+      {/* Mobile Slide-Up Drawer / Bottom Sheet */}
+      {isMobileMenuOpen && (
+        <div 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border shadow-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto backdrop-blur-2xl ${
+              theme.isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+            }`}
+          >
+            {/* Sheet Header */}
+            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                  K
+                </div>
+                <span className="font-bold text-sm">More Studios & Tools</span>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Quick Navigation Cards */}
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                onClick={() => { setActiveTab('monitoring'); setIsMobileMenuOpen(false); }}
+                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                  activeTab === 'monitoring' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
+                }`}
+              >
+                <Activity size={18} className="text-indigo-400 shrink-0" />
+                <div className="truncate">
+                  <span className="text-xs font-bold block truncate">Usage Hub</span>
+                  <span className={`text-[9px] ${theme.textMuted}`}>Quotas & activity</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('icon'); setIsMobileMenuOpen(false); }}
+                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                  activeTab === 'icon' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
+                }`}
+              >
+                <Heart size={18} className="text-pink-400 shrink-0" />
+                <div className="truncate">
+                  <span className="text-xs font-bold block truncate">Icon Finder</span>
+                  <span className={`text-[9px] ${theme.textMuted}`}>Lucide SVGs</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('account'); setIsMobileMenuOpen(false); }}
+                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                  activeTab === 'account' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
+                }`}
+              >
+                <User size={18} className="text-sky-400 shrink-0" />
+                <div className="truncate">
+                  <span className="text-xs font-bold block truncate">Account</span>
+                  <span className={`text-[9px] ${theme.textMuted}`}>Profile & Cloud</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                  activeTab === 'settings' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
+                }`}
+              >
+                <Settings size={18} className="text-slate-400 shrink-0" />
+                <div className="truncate">
+                  <span className="text-xs font-bold block truncate">Settings</span>
+                  <span className={`text-[9px] ${theme.textMuted}`}>Theme & Options</span>
+                </div>
+              </button>
+            </div>
+
+            {/* PWA Install Banner */}
+            {!isInstalled && (
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-600/20 to-sky-600/20 border border-indigo-500/30 flex items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Smartphone size={13} className="text-indigo-400" /> Install Krasola App
+                  </h4>
+                  <p className="text-[10px] text-slate-300">Run on your home screen like a native app</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsInstallModalOpen(true);
+                  }}
+                  className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shrink-0 shadow-md"
+                >
+                  Install
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Standalone PWA Install Modal */}
+      <PwaInstallModal 
+        isOpen={isInstallModalOpen} 
+        onClose={() => setIsInstallModalOpen(false)} 
+      />
     </div>
   );
 }
