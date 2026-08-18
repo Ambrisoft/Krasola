@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell, BookOpen } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell, BookOpen, Sun, Moon } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
