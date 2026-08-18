@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Krasola Magic Sign-In Link</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Your magic link to sign in</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -14,97 +17,124 @@
   </noscript>
   <![endif]-->
   <style>
+    :root {
+      color-scheme: light dark;
+      supported-color-schemes: light dark;
+    }
+    
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    
     @media only screen and (max-width: 600px) {
-      .email-container { width: 100% !important; margin: 0 !important; }
-      .content-padding { padding: 24px 20px !important; }
-      .btn-primary { width: 100% !important; text-align: center !important; }
+      .email-wrapper { padding: 20px 12px !important; }
+      .email-card { padding: 32px 24px !important; border-radius: 16px !important; }
+      .btn-cta { display: block !important; width: 100% !important; text-align: center !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body, .bg-body { background-color: #09090b !important; }
+      .email-card { background-color: #121215 !important; border-color: #27272a !important; }
+      .text-title { color: #fafafa !important; }
+      .text-body { color: #a1a1aa !important; }
+      .text-muted { color: #71717a !important; }
+      .btn-cta { background-color: #f4f4f5 !important; color: #09090b !important; }
+      .link-url { color: #818cf8 !important; }
+      .divider { border-color: #27272a !important; }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #f8fafc;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0b0f19; min-height: 100vh; padding: 40px 15px;">
-    <tr>
-      <td align="center">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 560px; background-color: #111827; border: 1px solid #1f293d; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-          
-          <!-- Header Accent -->
-          <tr>
-            <td style="height: 4px; background: linear-gradient(90deg, #38bdf8 0%, #6366f1 50%, #ec4899 100%);"></td>
-          </tr>
+<body class="bg-body" style="margin: 0; padding: 0; width: 100% !important; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
-          <!-- Brand Header -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" class="bg-body" style="background-color: #f8fafc; padding: 48px 16px;">
+    <tr>
+      <td align="center" valign="top">
+        
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-card" style="max-width: 500px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 40px 36px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);">
+          
+          <!-- Logo & Brand Header -->
           <tr>
-            <td align="center" style="padding: 36px 40px 20px 40px;">
-              <div style="width: 52px; height: 52px; background: linear-gradient(135deg, #0284c7 0%, #6366f1 100%); border-radius: 16px; text-align: center; line-height: 52px; font-size: 26px; font-weight: 800; color: #ffffff; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.4); margin: 0 auto 12px auto;">
-                K
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
-                Krasola
-              </div>
-              <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;">
-                Instant Sign-In
-              </div>
+            <td align="left" style="padding-bottom: 32px;">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td valign="middle" style="padding-right: 10px;">
+                    <img src="https://krasola.ambrishchaurasia0.workers.dev/icons/icon-192.svg" alt="Krasola" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 8px;" onerror="this.style.display='none'; this.nextSibling.style.display='inline-block';" />
+                    <span style="display: none; width: 30px; height: 30px; line-height: 30px; text-align: center; background: #4f46e5; color: #ffffff; font-weight: 800; font-size: 16px; border-radius: 8px;">K</span>
+                  </td>
+                  <td valign="middle">
+                    <span class="text-title" style="font-size: 17px; font-weight: 700; color: #09090b; letter-spacing: -0.3px;">Krasola</span>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Main Content -->
+          <!-- Message Body -->
           <tr>
-            <td class="content-padding" style="padding: 10px 40px 32px 40px; text-align: center;">
-              <h1 style="margin: 0 0 12px 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; line-height: 1.3;">
-                Your Magic Sign-In Link
+            <td align="left">
+              
+              <h1 class="text-title" style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #09090b; letter-spacing: -0.4px; line-height: 1.3;">
+                Your magic link to sign in
               </h1>
               
-              <p style="margin: 0 0 28px 0; font-size: 15px; line-height: 1.6; color: #94a3b8;">
-                Click the secure button below to instantly sign in to your Krasola workspace without typing a password.
+              <p class="text-body" style="margin: 0 0 28px 0; font-size: 15px; line-height: 1.6; color: #52525b;">
+                Click the button below to securely sign in to your Krasola workspace. No password required.
               </p>
 
-              <!-- Action Button -->
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 28px;">
+              <!-- CTA Button -->
+              <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
                 <tr>
-                  <td align="center">
-                    <a href="{{ .ConfirmationURL }}" target="_blank" class="btn-primary" style="display: inline-block; background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%); color: #ffffff; font-size: 15px; font-weight: 700; text-decoration: none; padding: 14px 36px; border-radius: 14px; box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.5); letter-spacing: 0.2px;">
-                      Sign In to Krasola &rarr;
+                  <td>
+                    <!--[if mso]>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ .ConfirmationURL }}" style="height:44px;v-text-anchor:middle;width:200px;" arcsize="20%" stroke="f" fillcolor="#09090b">
+                      <w:anchorlock/>
+                      <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:600;">Sign in to Krasola</center>
+                    </v:roundrect>
+                    <![endif]-->
+                    <!--[if !mso]><!-->
+                    <a href="{{ .ConfirmationURL }}" target="_blank" class="btn-cta" style="display: inline-block; background-color: #09090b; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 10px; letter-spacing: -0.1px;">
+                      Sign in to Krasola
                     </a>
+                    <!--<![endif]-->
                   </td>
                 </tr>
               </table>
 
-              <!-- Security Info -->
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; text-align: left;">
+              <!-- Security Note -->
+              <p class="text-muted" style="margin: 0 0 20px 0; font-size: 13px; line-height: 1.5; color: #71717a;">
+                This link expires in 15 minutes and can only be used once. If you did not request this, you can safely ignore this email.
+              </p>
+
+              <!-- Divider -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
                 <tr>
-                  <td style="font-size: 12px; color: #64748b; line-height: 1.5;">
-                    <strong style="color: #cbd5e1;">Single-Use Security:</strong> This link expires in 15 minutes and can only be used once. If you did not request this login, no action is needed.
-                  </td>
+                  <td class="divider" style="border-top: 1px solid #f1f5f9;"></td>
                 </tr>
               </table>
 
-              <!-- Fallback Direct Link -->
-              <div style="font-size: 12px; color: #64748b; line-height: 1.5; word-break: break-all;">
-                Direct URL fallback:<br>
-                <a href="{{ .ConfirmationURL }}" style="color: #38bdf8; text-decoration: underline; font-family: monospace; font-size: 11px;">{{ .ConfirmationURL }}</a>
-              </div>
+              <!-- Direct URL Fallback -->
+              <p class="text-muted" style="margin: 0; font-size: 12px; line-height: 1.5; color: #a1a1aa; word-break: break-all;">
+                Trouble with the button? Copy and paste this URL into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" class="link-url" style="color: #4f46e5; text-decoration: underline; font-family: monospace; font-size: 11px;">{{ .ConfirmationURL }}</a>
+              </p>
+
             </td>
           </tr>
 
+          <!-- Subtle Footer -->
           <tr>
-            <td style="border-top: 1px solid #1e293b; padding: 0;"></td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 24px 40px 32px 40px; text-align: center; background-color: #0d131f;">
-              <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #94a3b8;">
-                Krasola Studio by Ambrisoft
-              </p>
-              <p style="margin: 0; font-size: 11px; color: #64748b; line-height: 1.5;">
-                &copy; 2026 Ambrisoft. All rights reserved.
+            <td align="left" style="padding-top: 32px;">
+              <p class="text-muted" style="margin: 0; font-size: 12px; color: #a1a1aa;">
+                Krasola &middot; by Ambrisoft
               </p>
             </td>
           </tr>
 
         </table>
+
       </td>
     </tr>
   </table>
+
 </body>
 </html>
