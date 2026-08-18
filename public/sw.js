@@ -3,7 +3,7 @@
 // Enables standalone app execution, offline caching, and instant launch times.
 // ==============================================================================
 
-const CACHE_NAME = 'krasola-pwa-v1.3.2';
+const CACHE_NAME = 'krasola-pwa-v1.3.3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

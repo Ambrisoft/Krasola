@@ -512,6 +512,9 @@ export const DOCS_SECTIONS = {
         type: 'table',
         headers: ['Release', 'Highlights'],
         rows: [
+          ['v1.3.3', 'Mobile navigation overhaul for Image Studio and Settings Studio with horizontal scrollable sub-tabs.'],
+          ['v1.3.2', 'Automated background update engine with tab focus listener, periodic heartbeat, and In-App Notification Center alerts.'],
+          ['v1.3.1', 'User-centric Documentation Studio overhaul focusing on creator feature guides, workflows, and shortcuts.'],
           ['v1.3.0', 'Universal Ctrl+K Command Palette, interactive Theme Studio modal with dynamic swatches, CSS custom property token engine, and navigation de-cluttering.'],
           ['v1.2.3', 'Fixed runtime theme toggle icon imports and mobile light mode switching.'],
           ['v1.2.2', 'Mobile-first platform overhaul with 48px touch targets, bottom dock, and responsive sub-tab carousels.'],

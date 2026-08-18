@@ -5,6 +5,21 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.3.3',
+    date: '2026-08-18',
+    type: 'patch',
+    title: 'Image Studio & Settings Mobile Navigation Overhaul',
+    commit: 'HEAD',
+    summary: 'Streamlined responsive sub-navigation in Image Studio and Settings Studio with horizontal scrollable touch strips on mobile screens (< lg) and collapsible sidebars on desktop.',
+    changes: {
+      changed: [
+        'Overhauled Image Studio mobile layout with a horizontal scrollable sub-tab bar for instant access to Search, Extractor, Canvas Editor, Vector, and Export.',
+        'Overhauled Settings Studio mobile layout with a horizontal sub-tab bar for General, Appearance, Data Management, and About tabs.',
+        'Updated release notes documentation and synchronized SemVer metadata.'
+      ]
+    }
+  },
+  {
     version: '1.3.2',
     date: '2026-08-18',
     type: 'patch',

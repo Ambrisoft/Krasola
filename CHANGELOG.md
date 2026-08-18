@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.3] - 2026-08-18
+
+### Changed
+- Responsive mobile navigation overhaul for **Image Studio** and **Settings Studio**: Replaced vertical stacked sidebars on mobile screens (`< lg`) with touch-friendly, horizontal scrollable sub-tab strips.
+- Updated documentation release lineage to reflect v1.3.3.
+
+---
+
 ## [1.3.2] - 2026-08-18
 
 ### Added
