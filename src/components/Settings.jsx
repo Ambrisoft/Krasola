@@ -415,7 +415,7 @@ export default function SettingsComponent({
                 </button>
               </div>
 
-              <p className="text-xs leading-relaxed text-slate-300">
+              <p className={`text-xs leading-relaxed ${theme.isDark ? 'text-slate-300' : 'text-slate-700 font-medium'}`}>
                 Krasola is a high-performance design workspace uniting Palette Lab, Pattern Studio, Image Search Hub, Cloud Vault, and In-App Notifications with real-time browser sandbox execution.
               </p>
 
@@ -437,7 +437,7 @@ export default function SettingsComponent({
 
                   <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-[10px] text-slate-400 font-bold uppercase block">Built On</span>
-                    <span className="font-medium text-slate-300 truncate block">{getFormattedBuildDate()}</span>
+                    <span className={`font-medium truncate block ${theme.isDark ? 'text-slate-300' : 'text-slate-800 font-semibold'}`}>{getFormattedBuildDate()}</span>
                   </div>
 
                   <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>

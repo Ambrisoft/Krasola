@@ -4,6 +4,7 @@ import {
   Sun, Moon
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { APP_VERSION } from '../utils/versionManager';
 
 export default function Home({ setActiveTab, savedCount = 0, activePalette = [] }) {
   const { theme } = useTheme();
@@ -19,7 +20,7 @@ export default function Home({ setActiveTab, savedCount = 0, activePalette = [] 
           <div className="lg:col-span-3 space-y-4">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-300">
               <Sparkles size={12} />
-              <span>Introducing Krasola v1.0.0</span>
+              <span>Introducing Krasola v{APP_VERSION}</span>
             </div>
             
             <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-sans">
