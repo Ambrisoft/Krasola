@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell, BookOpen } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
@@ -13,6 +13,7 @@ import SavedAssets from './components/SavedAssets';
 import SettingsComponent from './components/Settings';
 import Account from './components/Account';
 import Monitoring from './components/Monitoring';
+import Documentation from './components/Documentation';
 import PwaInstallModal from './components/pwa/PwaInstallModal';
 import { NotificationCenterDrawer } from './components/notification/NotificationCenterDrawer';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
@@ -759,6 +760,23 @@ export default function App() {
               <Activity size={18} />
               {!isCollapsed && <span>Usage & Activity</span>}
             </button>
+
+            <button
+              onClick={() => setActiveTab('docs')}
+              title="Documentation & Guides"
+              className={`w-full flex items-center rounded-xl text-sm font-semibold transition-all ${
+                isCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3'
+              } ${
+                activeTab === 'docs'
+                  ? theme.accent
+                  : theme.isDark
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <BookOpen size={18} />
+              {!isCollapsed && <span>Documentation</span>}
+            </button>
           </nav>
         </div>
 
@@ -1104,6 +1122,13 @@ export default function App() {
                 setDefaultTab={setDefaultTab}
               />
             )}
+
+            {activeTab === 'docs' && (
+              <Documentation
+                theme={theme}
+                onNavigateStudio={setActiveTab}
+              />
+            )}
           </div>
         </main>
       </div>
@@ -1244,6 +1269,19 @@ export default function App() {
                 <div className="truncate">
                   <span className="text-xs font-bold block truncate">Account</span>
                   <span className={`text-[9px] ${theme.textMuted}`}>Profile & Cloud</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('docs'); setIsMobileMenuOpen(false); }}
+                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
+                  activeTab === 'docs' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
+                }`}
+              >
+                <BookOpen size={18} className="text-emerald-400 shrink-0" />
+                <div className="truncate">
+                  <span className="text-xs font-bold block truncate">Documentation</span>
+                  <span className={`text-[9px] ${theme.textMuted}`}>Guides & APIs</span>
                 </div>
               </button>
 
