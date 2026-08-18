@@ -5,6 +5,22 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.4.2',
+    date: '2026-08-18',
+    type: 'patch',
+    title: 'About Studio Overhaul & Double-Ring App Logo Sync',
+    commit: 'HEAD',
+    summary: 'Enhanced About Krasola panel with 1-click diagnostic copying, tech stack architecture cards, creator suites inventory, and GitHub repository links.',
+    changes: {
+      added: [
+        'Added 1-click Copy Specs button generating formatted system and build diagnostics.',
+        'Added Engine Architecture & Stack breakdown detailing React 18, Vite 6, Tailwind CSS, and Supabase.',
+        'Added Integrated Studio Modules inventory covering all 6 creator suites.',
+        'Synchronized standalone application double-ring logo branding across all headers and sidebars.'
+      ]
+    }
+  },
+  {
     version: '1.4.1',
     date: '2026-08-18',
     type: 'patch',

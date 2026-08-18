@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.2] - 2026-08-18
+
+### Added
+- **About Krasola Studio Modernization**:
+  - Implemented 1-click **Copy Diagnostics & Specs** formatted for bug reports and developer telemetry.
+  - Added full **Engine Architecture & Core Stack** breakdown (`React 18.2`, `Vite 6.2`, `Tailwind CSS 3.4`, `Supabase PostgreSQL`).
+  - Added comprehensive **Integrated Studio Modules Inventory** covering all 6 creator suites.
+  - Added official **MIT License** declaration and direct **GitHub Repository / Release Tags** links.
+  - Synchronized standalone application double-ring logo branding across desktop sidebar, mobile header, and settings panels.
+
+---
+
 ## [1.4.1] - 2026-08-18
 
 ### Fixed
