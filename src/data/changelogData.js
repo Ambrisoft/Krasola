@@ -5,6 +5,22 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.4.0',
+    date: '2026-08-18',
+    type: 'minor',
+    title: 'Home Dashboard Redesign & Live 3D Color Playground',
+    commit: 'HEAD',
+    summary: 'Comprehensive UI redesign of the Home dashboard featuring solid high-contrast surfaces, code-based 3D isometric SVG geometry, 1-click home palette randomizer, and live UI preview playground.',
+    changes: {
+      added: [
+        'Redesigned Home hero with code-based 3D isometric SVG geometry animating with active palette colors.',
+        'Added 1-click Home Palette Randomizer and quick HEX copy tools directly on the home page.',
+        'Upgraded Creative Suites launcher to a 6-suite showcase with capability tags.',
+        'Integrated live UI Color Preview Playground testing real buttons, metrics, and tags against active colors.'
+      ]
+    }
+  },
+  {
     version: '1.3.3',
     date: '2026-08-18',
     type: 'patch',

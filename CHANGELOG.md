@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-08-18
+
+### Added
+- Complete **Home Page UI & Layout Modernization**:
+  - Replaced gradient backdrops with clean, high-contrast solid card surfaces.
+  - Interactive **Code-Based 3D Vector Isometric Geometry (SVG)** floating preview with synchronized active palette colors.
+  - **1-Click Home Palette Randomizer**: Generate and cycle through harmonious color schemes directly on the home page.
+  - **6-Suite Creative Launcher Grid**: Detailed capability badges for Palette Lab, Pattern Studio, Icon Finder, Image Studio, Saved Assets Vault, and Usage & Activity.
+  - **Live UI Color Preview Playground**: Real-time rendering of active palette colors on interactive UI action cards, metric bars, and status badges.
+  - **Power-User Keyboard Shortcuts Bar**: Instant reference for `Ctrl+K`, `Space`, and `1..5` hotkeys.
+
+---
+
 ## [1.3.3] - 2026-08-18
 
 ### Changed

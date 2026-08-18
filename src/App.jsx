@@ -1130,6 +1130,9 @@ export default function App() {
                 setActiveTab={setActiveTab}
                 savedCount={totalSavedCount}
                 activePalette={activePalette}
+                setActivePalette={setActivePalette}
+                savedPalettes={savedPalettes}
+                savedPatterns={savedPatterns}
               />
             )}
 
