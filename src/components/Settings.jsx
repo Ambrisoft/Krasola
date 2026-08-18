@@ -14,12 +14,19 @@ import {
   Keyboard,
   RefreshCw,
   Home,
-  History
+  History,
+  Copy,
+  ExternalLink,
+  ShieldCheck,
+  Cpu,
+  Layers,
+  Heart,
+  Image as ImageIcon
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { THEMES } from '../utils/themeUtils';
-import { APP_VERSION, COMMIT_HASH, APP_STAGE, getFormattedBuildDate, checkForAppUpdates } from '../utils/versionManager';
+import { APP_VERSION, COMMIT_HASH, APP_STAGE, BUILD_TIMESTAMP, getFormattedBuildDate, checkForAppUpdates } from '../utils/versionManager';
 import ChangelogModal from './version/ChangelogModal';
 
 export default function SettingsComponent({ 
@@ -437,9 +444,10 @@ export default function SettingsComponent({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold tracking-tight">About Krasola</h3>
-              <p className={`text-xs ${theme.textMuted}`}>Platform diagnostics, version control, and engine architecture.</p>
+              <p className={`text-xs ${theme.textMuted}`}>Platform diagnostics, architecture, creator suites inventory, and release lineage.</p>
             </div>
 
+            {/* Card 1: Brand Header & Action Row */}
             <div className={`border rounded-2xl p-6 space-y-6 ${theme.card}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -461,8 +469,22 @@ export default function SettingsComponent({
 
                 <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                   <button
+                    onClick={() => {
+                      const specs = `Krasola Diagnostics Report\n--------------------------\nVersion: v${APP_VERSION}\nCommit: ${COMMIT_HASH}\nBuild Date: ${getFormattedBuildDate()}\nPWA: Active\nUser Agent: ${navigator.userAgent}\nScreen: ${window.innerWidth}x${window.innerHeight}`;
+                      navigator.clipboard.writeText(specs);
+                      toast.success("Copied platform diagnostics to clipboard!");
+                    }}
+                    className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+                      theme.isDark ? 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
+                    }`}
+                    title="Copy technical specs for bug reports and telemetry"
+                  >
+                    <Copy size={13} /> Copy Specs
+                  </button>
+
+                  <button
                     onClick={() => setIsChangelogOpen(true)}
-                    className="py-2 px-3.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all active:scale-95"
+                    className="py-2 px-3.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all active:scale-95 cursor-pointer"
                   >
                     <History size={13} /> View Changelog & Releases
                   </button>
@@ -470,7 +492,7 @@ export default function SettingsComponent({
                   <button
                     onClick={handleCheckUpdate}
                     disabled={isCheckingUpdate}
-                    className="py-2 px-3.5 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all active:scale-95"
+                    className="py-2 px-3.5 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                   >
                     <RefreshCw size={13} className={isCheckingUpdate ? 'animate-spin' : ''} />
                     {isCheckingUpdate ? 'Checking Server...' : 'Check Updates'}
@@ -479,7 +501,7 @@ export default function SettingsComponent({
               </div>
 
               <p className={`text-xs leading-relaxed ${theme.isDark ? 'text-slate-300' : 'text-slate-700 font-medium'}`}>
-                Krasola is a high-performance design workspace uniting Palette Lab, Pattern Studio, Image Search Hub, Cloud Vault, and In-App Notifications with real-time browser sandbox execution.
+                Krasola is a unified, high-performance creative workspace engineered to bridge prototyping and frontend development. It unites mathematical color harmony tools, dynamic SVG vector pattern geometry, 1,000+ vector icons, live canvas photo compression, and cloud-synced vaults directly in client-side browser sandboxes with zero cloud latency.
               </p>
 
               <hr className={theme.border} />
@@ -488,39 +510,154 @@ export default function SettingsComponent({
               <div className="space-y-2.5">
                 <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">System & Build Diagnostics</h5>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className={`p-3.5 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-0.5`}>
                     <span className="text-[10px] text-slate-400 font-bold uppercase block">Semantic Version</span>
-                    <span className="font-mono font-bold text-indigo-400">v{APP_VERSION}</span>
+                    <span className="font-mono font-bold text-indigo-400 text-sm">v{APP_VERSION}</span>
+                    <span className="text-[9px] text-slate-500 block">SemVer 2.0 Spec</span>
                   </div>
 
-                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Git Commit</span>
-                    <span className="font-mono font-bold text-sky-400">{COMMIT_HASH}</span>
+                  <div className={`p-3.5 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-0.5`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Git Commit SHA</span>
+                    <span className="font-mono font-bold text-sky-400 text-sm">{COMMIT_HASH}</span>
+                    <span className="text-[9px] text-slate-500 block">Main Branch Sync</span>
                   </div>
 
-                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className={`p-3.5 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-0.5`}>
                     <span className="text-[10px] text-slate-400 font-bold uppercase block">Built On</span>
-                    <span className={`font-medium truncate block ${theme.isDark ? 'text-slate-300' : 'text-slate-800 font-semibold'}`}>{getFormattedBuildDate()}</span>
+                    <span className={`font-semibold truncate block ${theme.isDark ? 'text-slate-200' : 'text-slate-800'}`}>{getFormattedBuildDate()}</span>
+                    <span className="text-[9px] text-slate-500 block">Automated CI Release</span>
                   </div>
 
-                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase block">PWA Engine</span>
-                    <span className="font-medium text-emerald-400">Active (sw.js)</span>
+                  <div className={`p-3.5 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-0.5`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">PWA Service Worker</span>
+                    <span className="font-bold text-emerald-400 block">Active (sw.js)</span>
+                    <span className="text-[9px] text-slate-500 block">Offline Cache Enabled</span>
                   </div>
                 </div>
               </div>
 
               <hr className={theme.border} />
 
-              <div className="space-y-2">
-                <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">Engine & Stack</h5>
-                <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-semibold">
-                  <li className="flex items-center gap-1.5">⚛️ React 18</li>
-                  <li className="flex items-center gap-1.5">⚡ Vite 6 Bundler</li>
-                  <li className="flex items-center gap-1.5">🎨 Tailwind CSS</li>
-                  <li className="flex items-center gap-1.5">☁️ Supabase Cloud</li>
-                </ul>
+              {/* Core Engine & Tech Stack */}
+              <div className="space-y-2.5">
+                <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">Engine Architecture & Stack</h5>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div className={`p-3 rounded-xl border flex items-center gap-2.5 ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-lg">⚛️</span>
+                    <div>
+                      <span className="font-bold block">React 18.2</span>
+                      <span className={`text-[10px] ${theme.textMuted}`}>Concurrent Mode</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border flex items-center gap-2.5 ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-lg">⚡</span>
+                    <div>
+                      <span className="font-bold block">Vite 6.2</span>
+                      <span className={`text-[10px] ${theme.textMuted}`}>Rollup Tree-Shaking</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border flex items-center gap-2.5 ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-lg">🎨</span>
+                    <div>
+                      <span className="font-bold block">Tailwind CSS</span>
+                      <span className={`text-[10px] ${theme.textMuted}`}>CSS Token Engine</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border flex items-center gap-2.5 ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-lg">☁️</span>
+                    <div>
+                      <span className="font-bold block">Supabase PG</span>
+                      <span className={`text-[10px] ${theme.textMuted}`}>Row Level Security</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              <hr className={theme.border} />
+
+              {/* Integrated Creative Suites Status */}
+              <div className="space-y-2.5">
+                <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">Integrated Studio Modules</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-indigo-400">
+                      <Palette size={14} /> Palette Lab
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>5-color harmony math, WCAG contrast verification, CSS / Tailwind export.</p>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-emerald-400">
+                      <Layers size={14} /> Pattern Studio
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>16 procedural vector pattern formulas, Bézier curves, and clean SVG DataURI export.</p>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-sky-400">
+                      <Heart size={14} /> Icon Finder
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>1,000+ Lucide vector icons with live stroke, size, and JSX component export.</p>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-purple-400">
+                      <ImageIcon size={14} /> Image Studio
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>60fps canvas filters, 5-color palette extraction, and WebP compression.</p>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-amber-400">
+                      <Database size={14} /> Cloud Vault
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>50MB private creator storage with public showcase sharing toggle.</p>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-1`}>
+                    <div className="flex items-center gap-2 font-bold text-rose-400">
+                      <ShieldCheck size={14} /> Security & Privacy
+                    </div>
+                    <p className={`text-[11px] ${theme.textMuted}`}>100% client-side sandbox execution with zero tracking cookies or lock-in.</p>
+                  </div>
+                </div>
+              </div>
+
+              <hr className={theme.border} />
+
+              {/* Official Repository & Open Source Information */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    MIT License
+                  </span>
+                  <span className={theme.textMuted}>Crafted with pride by Ambrisoft</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://github.com/Ambrisoft/Krasola"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1 transition-colors"
+                  >
+                    GitHub Repository <ExternalLink size={12} />
+                  </a>
+                  <span className={theme.textMuted}>&bull;</span>
+                  <a
+                    href="https://github.com/Ambrisoft/Krasola/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1 transition-colors"
+                  >
+                    Release Tags <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
