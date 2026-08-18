@@ -1,0 +1,62 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Build Production Application Bundle
+        run: npm run build
+
+      - name: Package Dist Artifacts (ZIP)
+        run: |
+          cd dist
+          zip -r ../krasola-production-dist.zip .
+          cd ..
+
+      - name: Extract Release Notes from CHANGELOG.md
+        id: release_notes
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Extracting release notes for version $VERSION..."
+          # Extract changelog section between matching header and next header
+          awk "/^## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > RELEASE_NOTES.md
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "Release notes for ${GITHUB_REF_NAME} (Krasola Multi-Utility Workspace)" > RELEASE_NOTES.md
+          fi
+          cat RELEASE_NOTES.md
+
+      - name: Create Official GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE_NOTES.md
+          name: "Krasola ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          files: |
+            krasola-production-dist.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
