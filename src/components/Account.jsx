@@ -64,11 +64,18 @@ export default function Account({
   const [sessionAgent, setSessionAgent] = useState('Detecting...');
 
   useEffect(() => {
-    // Fetch client IP on mount
-    fetch('https://api.ipify.org?format=json')
-      .then(res => res.json())
-      .then(data => setClientIp(data.ip))
-      .catch(() => setClientIp('127.0.0.1'));
+    // Graceful client IP detection with privacy fallback
+    try {
+      fetch('https://api.ipify.org?format=json')
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
+        .then(data => setClientIp(data.ip || 'Protected Client'))
+        .catch(() => setClientIp('Protected Client'));
+    } catch {
+      setClientIp('Protected Client');
+    }
 
     // Detect browser agent details
     const ua = navigator.userAgent;
@@ -589,6 +596,7 @@ export default function Account({
                         <input
                           type="text"
                           required
+                          autoComplete="username"
                           placeholder="e.g. alex_design"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
@@ -609,6 +617,7 @@ export default function Account({
                       <input
                         type="email"
                         required
+                        autoComplete="email"
                         placeholder="alex@ambrisoft.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -629,6 +638,7 @@ export default function Account({
                         <input
                           type="password"
                           required
+                          autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'}
                           placeholder="••••••••"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
