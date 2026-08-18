@@ -187,9 +187,35 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
 
   return (
     <div className={`flex flex-col lg:flex-row h-full rounded-2xl border backdrop-blur-xl transition-all duration-300 overflow-hidden ${theme.card}`}>
-      {/* Collapsible Sub-Sidebar */}
-      <aside className={`transition-all duration-300 border-b lg:border-b-0 lg:border-r flex flex-col justify-between shrink-0 relative z-20 ${
-        isSubSidebarCollapsed ? 'w-full lg:w-16' : 'w-full lg:w-60'
+      {/* Mobile Horizontal Sub-Tab Strip (< lg) */}
+      <div className={`lg:hidden border-b p-2 overflow-x-auto scrollbar-none flex items-center gap-1.5 shrink-0 ${
+        theme.isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+      }`}>
+        {navItems.map(item => {
+          const Icon = item.icon;
+          const isActive = activeSubTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveSubTab(item.id)}
+              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-all active:scale-95 ${
+                isActive
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                  : theme.isDark
+                    ? 'text-slate-300 bg-slate-850 hover:bg-slate-800'
+                    : 'text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 shadow-sm'
+              }`}
+            >
+              <Icon size={14} className="shrink-0" />
+              <span>{item.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop Collapsible Sub-Sidebar (>= lg) */}
+      <aside className={`hidden lg:flex transition-all duration-300 border-r flex-col justify-between shrink-0 relative z-20 ${
+        isSubSidebarCollapsed ? 'w-16' : 'w-60'
       } ${
         theme.isDark ? 'bg-slate-950/20 border-slate-800' : 'bg-slate-50/50 border-slate-200'
       }`}>
@@ -204,7 +230,7 @@ export default function PatternStudio({ activePalette = [], onSavePattern, showT
             
             <button
               onClick={() => setIsSubSidebarCollapsed(!isSubSidebarCollapsed)}
-              className="hidden lg:flex p-1 rounded bg-slate-500/10 hover:bg-slate-500/20 text-xs text-slate-400 ml-auto transition-all"
+              className="p-1 rounded bg-slate-500/10 hover:bg-slate-500/20 text-xs text-slate-400 ml-auto transition-all"
               title={isSubSidebarCollapsed ? "Expand Sub-Sidebar" : "Collapse Sub-Sidebar"}
             >
               {isSubSidebarCollapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}

@@ -592,6 +592,7 @@ export default function App() {
     saved: 'Saved Assets',
     monitoring: 'Activity & Usage Hub',
     account: 'Account Studio',
+    docs: 'Documentation & Guides',
     settings: 'Settings & Configurations'
   };
 
@@ -850,32 +851,53 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Mobile Header (Shown on < 768px) */}
-        <header className={`md:hidden h-14 border-b px-4 flex items-center justify-between shrink-0 z-30 transition-colors duration-300 ${
-          theme.isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/95 border-slate-200'
-        } backdrop-blur-md`}>
-          <div className="flex items-center gap-2.5">
+        {/* Mobile Header (Elevated Glassmorphism for < 768px) */}
+        <header className={`md:hidden h-14 border-b px-3.5 flex items-center justify-between shrink-0 z-30 transition-colors duration-300 ${
+          theme.isDark ? 'bg-slate-950/90 border-slate-850' : 'bg-white/95 border-slate-200 shadow-sm'
+        } backdrop-blur-xl`}>
+          <div 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform"
+          >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-black text-base shrink-0">
               K
             </div>
-            <div>
-              <h1 className="text-sm font-extrabold tracking-tight leading-none">Krasola</h1>
-              <span className={`text-[9px] font-bold tracking-wider uppercase ${theme.textMuted}`}>{tabTitles[activeTab]}</span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <span className={`text-xs font-black tracking-tight leading-none ${theme.isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Krasola
+                </span>
+                <ChevronRight size={11} className="text-slate-400 rotate-90" />
+              </div>
+              <span className="text-[10px] font-bold tracking-wider text-indigo-500 dark:text-indigo-400 truncate max-w-[130px]">
+                {tabTitles[activeTab]}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            {/* Quick 1-Tap Theme Toggle */}
+            <button
+              onClick={() => setActiveThemeId(theme.isDark ? 'snowy-light' : 'midnight-dark')}
+              className={`p-2 rounded-xl border transition-all active:scale-90 ${
+                theme.isDark ? 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+              }`}
+              title={theme.isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {theme.isDark ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+
             {/* Mobile Notification Bell */}
             <button
               onClick={toggleDrawer}
-              className={`p-2 rounded-xl border relative transition-all ${
-                theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-700'
+              className={`p-2 rounded-xl border relative transition-all active:scale-90 ${
+                theme.isDark ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
               title="Notifications"
             >
-              <Bell size={16} />
+              <Bell size={15} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white font-extrabold text-[9px] rounded-full flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white font-extrabold text-[9px] rounded-full flex items-center justify-center shadow-md animate-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -884,20 +906,20 @@ export default function App() {
             {!isInstalled && (
               <button
                 onClick={() => setIsInstallModalOpen(true)}
-                className="py-1 px-2.5 bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white text-[11px] font-bold rounded-xl flex items-center gap-1 shadow-sm transition-all"
+                className="py-1.5 px-2.5 bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white text-[11px] font-bold rounded-xl flex items-center gap-1 shadow-sm transition-all active:scale-95"
               >
-                <Download size={12} /> Install
+                <Download size={11} /> App
               </button>
             )}
 
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`p-2 rounded-xl border transition-all ${
-                theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-700'
+              className={`p-2 rounded-xl border transition-all active:scale-90 ${
+                theme.isDark ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
               title="Open Menu"
             >
-              <Menu size={16} />
+              <Menu size={15} />
             </button>
           </div>
         </header>
@@ -1133,73 +1155,71 @@ export default function App() {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar (Fixed for < 768px with Safe Area Padding) */}
-      <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-xl transition-all ${
-        theme.isDark ? 'bg-slate-950/90 border-slate-850' : 'bg-white/95 border-slate-200 shadow-2xl'
-      } pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] pt-1.5 px-2 flex items-center justify-around`}>
+      {/* Mobile Bottom Navigation Bar (48px Touch Targets + Notch Protection) */}
+      <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl transition-all ${
+        theme.isDark ? 'bg-slate-950/95 border-slate-850' : 'bg-white/95 border-slate-200 shadow-2xl'
+      } pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] pt-1.5 px-3 flex items-center justify-around`}>
         <button
           onClick={() => setActiveTab('home')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
-            activeTab === 'home' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1.5 px-2 rounded-2xl transition-all active:scale-90 ${
+            activeTab === 'home' 
+              ? 'text-indigo-500 dark:text-indigo-400 font-black bg-indigo-500/10 dark:bg-indigo-500/20 shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <HomeIcon size={18} />
-          <span className="text-[9px] mt-0.5">Home</span>
+          <HomeIcon size={19} />
+          <span className="text-[10px] mt-0.5 font-bold">Home</span>
         </button>
 
         <button
           onClick={() => setActiveTab('palette')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
-            activeTab === 'palette' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1.5 px-2 rounded-2xl transition-all active:scale-90 ${
+            activeTab === 'palette' 
+              ? 'text-indigo-500 dark:text-indigo-400 font-black bg-indigo-500/10 dark:bg-indigo-500/20 shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Palette size={18} />
-          <span className="text-[9px] mt-0.5">Palette</span>
+          <Palette size={19} />
+          <span className="text-[10px] mt-0.5 font-bold">Palette</span>
         </button>
 
         <button
           onClick={() => setActiveTab('pattern')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
-            activeTab === 'pattern' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1.5 px-2 rounded-2xl transition-all active:scale-90 ${
+            activeTab === 'pattern' 
+              ? 'text-indigo-500 dark:text-indigo-400 font-black bg-indigo-500/10 dark:bg-indigo-500/20 shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Layers size={18} />
-          <span className="text-[9px] mt-0.5">Pattern</span>
+          <Layers size={19} />
+          <span className="text-[10px] mt-0.5 font-bold">Pattern</span>
         </button>
 
         <button
           onClick={() => setActiveTab('imagesearch')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
-            activeTab === 'imagesearch' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1.5 px-2 rounded-2xl transition-all active:scale-90 ${
+            activeTab === 'imagesearch' 
+              ? 'text-indigo-500 dark:text-indigo-400 font-black bg-indigo-500/10 dark:bg-indigo-500/20 shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <ImageIcon size={18} />
-          <span className="text-[9px] mt-0.5">Image</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('saved')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
-            activeTab === 'saved' ? 'text-indigo-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <FolderHeart size={18} />
-          <span className="text-[9px] mt-0.5">Saved</span>
-          {totalSavedCount > 0 && (
-            <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-indigo-500" />
-          )}
+          <ImageIcon size={19} />
+          <span className="text-[10px] mt-0.5 font-bold">Image</span>
         </button>
 
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
-            ['monitoring', 'account', 'settings', 'icon'].includes(activeTab)
-              ? 'text-indigo-400 font-bold scale-105'
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1.5 px-2 rounded-2xl transition-all active:scale-90 relative ${
+            ['monitoring', 'account', 'settings', 'icon', 'saved', 'docs'].includes(activeTab)
+              ? 'text-indigo-500 dark:text-indigo-400 font-black bg-indigo-500/10 dark:bg-indigo-500/20 shadow-sm'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Menu size={18} />
-          <span className="text-[9px] mt-0.5">More</span>
+          <Menu size={19} />
+          <span className="text-[10px] mt-0.5 font-bold">More</span>
+          {totalSavedCount > 0 && !['home', 'palette', 'pattern', 'imagesearch'].includes(activeTab) && (
+            <span className="absolute top-1 right-3 w-2 h-2 rounded-full bg-indigo-500" />
+          )}
         </button>
       </nav>
 
@@ -1207,113 +1227,167 @@ export default function App() {
       {isMobileMenuOpen && (
         <div 
           onClick={() => setIsMobileMenuOpen(false)}
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border shadow-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto backdrop-blur-2xl ${
-              theme.isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+            className={`w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border shadow-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto backdrop-blur-2xl scrollbar-thin ${
+              theme.isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-800'
             }`}
           >
+            {/* iOS Pill Handle */}
+            <div className="w-12 h-1.5 rounded-full bg-slate-500/30 mx-auto -mt-1 mb-2" />
+
             {/* Sheet Header */}
-            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+            <div className={`flex items-center justify-between border-b pb-3 ${theme.isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center font-black text-white text-sm shadow-md">
                   K
                 </div>
-                <span className="font-bold text-sm">More Studios & Tools</span>
+                <div>
+                  <h3 className="font-extrabold text-sm leading-tight">Studios & Tool Suite</h3>
+                  <p className={`text-[10px] font-semibold ${theme.textMuted}`}>All unified Krasola workspaces</p>
+                </div>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400"
+                className={`p-2 rounded-xl border transition-all ${
+                  theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+                }`}
               >
-                <X size={16} />
+                <X size={15} />
               </button>
             </div>
 
-            {/* Quick Navigation Cards */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                onClick={() => { setActiveTab('monitoring'); setIsMobileMenuOpen(false); }}
-                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                  activeTab === 'monitoring' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
-                }`}
-              >
-                <Activity size={18} className="text-indigo-400 shrink-0" />
-                <div className="truncate">
-                  <span className="text-xs font-bold block truncate">Usage Hub</span>
-                  <span className={`text-[9px] ${theme.textMuted}`}>Quotas & activity</span>
-                </div>
-              </button>
+            {/* Section 1: Creative Studios */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block px-1">
+                Creative Studios
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setActiveTab('saved'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'saved' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <FolderHeart size={18} className="text-pink-500 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Saved Assets</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>{totalSavedCount} items stored</span>
+                  </div>
+                </button>
 
-              <button
-                onClick={() => { setActiveTab('icon'); setIsMobileMenuOpen(false); }}
-                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                  activeTab === 'icon' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
-                }`}
-              >
-                <Heart size={18} className="text-pink-400 shrink-0" />
-                <div className="truncate">
-                  <span className="text-xs font-bold block truncate">Icon Finder</span>
-                  <span className={`text-[9px] ${theme.textMuted}`}>Lucide SVGs</span>
-                </div>
-              </button>
+                <button
+                  onClick={() => { setActiveTab('icon'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'icon' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <Heart size={18} className="text-rose-500 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Icon Finder</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>1,000+ Lucide SVGs</span>
+                  </div>
+                </button>
+              </div>
+            </div>
 
-              <button
-                onClick={() => { setActiveTab('account'); setIsMobileMenuOpen(false); }}
-                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                  activeTab === 'account' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
-                }`}
-              >
-                <User size={18} className="text-sky-400 shrink-0" />
-                <div className="truncate">
-                  <span className="text-xs font-bold block truncate">Account</span>
-                  <span className={`text-[9px] ${theme.textMuted}`}>Profile & Cloud</span>
-                </div>
-              </button>
+            {/* Section 2: Cloud & Systems */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-sky-500 dark:text-sky-400 block px-1">
+                Cloud & Account
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setActiveTab('account'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'account' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <User size={18} className="text-sky-500 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Account</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>Cloud & Profile</span>
+                  </div>
+                </button>
 
-              <button
-                onClick={() => { setActiveTab('docs'); setIsMobileMenuOpen(false); }}
-                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                  activeTab === 'docs' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
-                }`}
-              >
-                <BookOpen size={18} className="text-emerald-400 shrink-0" />
-                <div className="truncate">
-                  <span className="text-xs font-bold block truncate">Documentation</span>
-                  <span className={`text-[9px] ${theme.textMuted}`}>Guides & APIs</span>
-                </div>
-              </button>
+                <button
+                  onClick={() => { setActiveTab('monitoring'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'monitoring' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <Activity size={18} className="text-emerald-500 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Usage Hub</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>50MB Quota & Logs</span>
+                  </div>
+                </button>
+              </div>
+            </div>
 
-              <button
-                onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
-                className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                  activeTab === 'settings' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-slate-800 hover:bg-slate-800/50'
-                }`}
-              >
-                <Settings size={18} className="text-slate-400 shrink-0" />
-                <div className="truncate">
-                  <span className="text-xs font-bold block truncate">Settings</span>
-                  <span className={`text-[9px] ${theme.textMuted}`}>Theme & Options</span>
-                </div>
-              </button>
+            {/* Section 3: Knowledge & Settings */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 block px-1">
+                Guides & Settings
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setActiveTab('docs'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'docs' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <BookOpen size={18} className="text-emerald-500 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Documentation</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>Architecture & APIs</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    activeTab === 'settings' 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
+                      : theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <Settings size={18} className="text-slate-400 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Settings</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>Theme & Options</span>
+                  </div>
+                </button>
+              </div>
             </div>
 
             {/* PWA Install Banner */}
             {!isInstalled && (
               <div className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-600/20 to-sky-600/20 border border-indigo-500/30 flex items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <h4 className={`text-xs font-bold flex items-center gap-1.5 ${theme.isDark ? 'text-white' : 'text-slate-900'}`}>
                     <Smartphone size={13} className="text-indigo-400" /> Install Krasola App
                   </h4>
-                  <p className="text-[10px] text-slate-300">Run on your home screen like a native app</p>
+                  <p className={`text-[10px] ${theme.textMuted}`}>Add to home screen for native speed</p>
                 </div>
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     setIsInstallModalOpen(true);
                   }}
-                  className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shrink-0 shadow-md"
+                  className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shrink-0 shadow-md active:scale-95"
                 >
                   Install
                 </button>

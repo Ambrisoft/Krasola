@@ -29,6 +29,7 @@ import { APP_VERSION, COMMIT_HASH } from '../utils/versionManager';
 export default function Documentation({ theme, onNavigateStudio }) {
   const [activeSectionId, setActiveSectionId] = useState('overview');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileTopicsOpen, setIsMobileTopicsOpen] = useState(false);
 
   const activeSection = useMemo(() => {
     return DOCS_SECTIONS[activeSectionId] || DOCS_SECTIONS['overview'];
@@ -119,8 +120,8 @@ export default function Documentation({ theme, onNavigateStudio }) {
   return (
     <div className={`h-full flex flex-col md:flex-row overflow-hidden ${theme.isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       
-      {/* 1. Left Sticky Navigation Sidebar */}
-      <aside className={`w-full md:w-72 lg:w-80 shrink-0 border-r flex flex-col h-full overflow-hidden ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+      {/* 1. Desktop Left Navigation Sidebar (Hidden on < md:) */}
+      <aside className={`hidden md:flex md:w-72 lg:w-80 shrink-0 border-r flex-col h-full overflow-hidden ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
         
         {/* Search Trigger Header */}
         <div className={`p-4 border-b ${theme.isDark ? 'border-slate-800' : 'border-slate-100'}`}>
@@ -195,7 +196,32 @@ export default function Documentation({ theme, onNavigateStudio }) {
       </aside>
 
       {/* 2. Center Interactive Reader Area */}
-      <main className="flex-1 h-full overflow-y-auto p-5 sm:p-8 lg:p-12 scrollbar-thin max-w-4xl mx-auto w-full">
+      <main className="flex-1 h-full overflow-y-auto p-4 sm:p-8 lg:p-12 scrollbar-thin max-w-4xl mx-auto w-full">
+        {/* Mobile Sticky Topic Switcher Bar (< md:) */}
+        <div className={`md:hidden mb-4 p-2.5 rounded-2xl border flex items-center justify-between shadow-sm ${
+          theme.isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200'
+        }`}>
+          <button
+            onClick={() => setIsMobileTopicsOpen(true)}
+            className="flex items-center gap-2 text-xs font-bold text-indigo-500 dark:text-indigo-400 truncate max-w-[220px]"
+          >
+            <BookOpen size={14} className="shrink-0" />
+            <span className="truncate">{activeSection.title}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 shrink-0">
+              Topics ▾
+            </span>
+          </button>
+
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className={`p-2 rounded-xl border transition-all ${
+              theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}
+            title="Search docs"
+          >
+            <Search size={14} />
+          </button>
+        </div>
         {/* Breadcrumb Bar */}
         <div className={`flex items-center gap-2 text-xs font-bold mb-6 ${theme.isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           <span>Docs</span>
@@ -322,6 +348,72 @@ export default function Documentation({ theme, onNavigateStudio }) {
           )}
         </div>
       </main>
+
+      {/* Mobile Topic Selection Bottom Sheet */}
+      {isMobileTopicsOpen && (
+        <div 
+          onClick={() => setIsMobileTopicsOpen(false)}
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-end justify-center p-0 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full rounded-t-3xl border-t shadow-2xl p-5 space-y-4 max-h-[80vh] overflow-y-auto backdrop-blur-2xl scrollbar-thin ${
+              theme.isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-800'
+            }`}
+          >
+            {/* iOS Pill Handle */}
+            <div className="w-12 h-1.5 rounded-full bg-slate-500/30 mx-auto -mt-1 mb-2" />
+
+            <div className={`flex items-center justify-between border-b pb-3 ${theme.isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+              <div className="flex items-center gap-2">
+                <BookOpen size={16} className="text-indigo-500" />
+                <span className="font-extrabold text-sm">Select Documentation Topic</span>
+              </div>
+              <button
+                onClick={() => setIsMobileTopicsOpen(false)}
+                className={`p-1.5 rounded-xl border ${theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'}`}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {DOCS_CATEGORIES.map((category) => (
+                <div key={category.id} className="space-y-1.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 px-1">
+                    {category.title}
+                  </span>
+                  <div className="space-y-1">
+                    {category.items.map((secKey) => {
+                      const section = DOCS_SECTIONS[secKey];
+                      if (!section) return null;
+                      const isActive = activeSectionId === secKey;
+
+                      return (
+                        <button
+                          key={secKey}
+                          onClick={() => {
+                            setActiveSectionId(secKey);
+                            setIsMobileTopicsOpen(false);
+                          }}
+                          className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-all active:scale-95 ${
+                            isActive
+                              ? 'bg-indigo-600 text-white shadow-md'
+                              : theme.isDark ? 'bg-slate-850 hover:bg-slate-800 text-slate-300' : 'bg-slate-50 hover:bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          <span className="truncate">{section.title}</span>
+                          {isActive && <ChevronRight size={14} className="shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Global Quick Search Modal */}
       <DocsSearchModal
