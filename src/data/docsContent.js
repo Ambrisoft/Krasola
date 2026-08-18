@@ -512,6 +512,8 @@ export const DOCS_SECTIONS = {
         type: 'table',
         headers: ['Release', 'Highlights'],
         rows: [
+          ['v1.4.1', 'Fixed Active Palette UI Preview Playground tab switching across UI Card, Metrics Bar, and Action states.'],
+          ['v1.4.0', 'Home page overhaul with 3D isometric SVG geometry, 1-click palette randomizer, 6-suite launcher, and UI preview playground.'],
           ['v1.3.3', 'Mobile navigation overhaul for Image Studio and Settings Studio with horizontal scrollable sub-tabs.'],
           ['v1.3.2', 'Automated background update engine with tab focus listener, periodic heartbeat, and In-App Notification Center alerts.'],
           ['v1.3.1', 'User-centric Documentation Studio overhaul focusing on creator feature guides, workflows, and shortcuts.'],

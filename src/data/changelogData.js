@@ -5,6 +5,21 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.4.1',
+    date: '2026-08-18',
+    type: 'patch',
+    title: 'Active Palette UI Preview Playground Fix',
+    commit: 'HEAD',
+    summary: 'Resolved tab switching issue in Home dashboard UI Preview Playground, enabling live dynamic rendering across UI Card, Metrics Bar, and Action states.',
+    changes: {
+      fixed: [
+        'Fixed Active Palette UI Preview Playground tab switching to render dynamic UI Card, Metrics Bar, and Action states in real time.',
+        'Added interactive feedback notifications when clicking live preview buttons.',
+        'Updated Documentation Studio release lineage and system diagnostics.'
+      ]
+    }
+  },
+  {
     version: '1.4.0',
     date: '2026-08-18',
     type: 'minor',

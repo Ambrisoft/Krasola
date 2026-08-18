@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2026-08-18
+
+### Fixed
+- Fixed **Active Palette UI Preview Playground** tab switching: Enabled full interactive rendering across *UI Card*, *Metrics Bar*, and *Actions* states with real-time swatch binding and button click feedback.
+
+---
+
 ## [1.4.0] - 2026-08-18
 
 ### Added
