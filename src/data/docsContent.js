@@ -1,6 +1,6 @@
 /**
- * Krasola Official Documentation Content Store
- * STRICT INTEGRITY: 100% Genuine, Active Codebase Data (No Mock/Fake Information)
+ * Krasola Official User Guides & Documentation Store
+ * User-Centric: Focused on platform features, how-to guides, workflows, tips, shortcuts & best practices.
  */
 
 export const DOCS_CATEGORIES = [
@@ -8,29 +8,29 @@ export const DOCS_CATEGORIES = [
     id: 'getting-started',
     title: 'Getting Started',
     icon: 'Rocket',
-    description: 'Introduction, architecture philosophy, and progressive web app setup.',
-    items: ['overview', 'architecture', 'pwa-installation']
+    description: 'Learn how to navigate the workspace, install the app, and master the shortcuts.',
+    items: ['overview', 'quickstart-guide', 'pwa-installation', 'command-palette-shortcuts']
   },
   {
     id: 'creative-studios',
-    title: 'Creative Studios',
+    title: 'Design & Creative Studios',
     icon: 'Palette',
-    description: 'Deep dives into Palette Lab, Pattern Studio, Image Search, and Icon Finder.',
-    items: ['palette-lab', 'pattern-studio', 'image-search', 'icon-finder']
+    description: 'Step-by-step guides for Palette Lab, Pattern Studio, Icon Finder, and Image Studio.',
+    items: ['palette-lab-guide', 'pattern-studio-guide', 'icon-finder-guide', 'image-studio-guide']
   },
   {
-    id: 'cloud-security',
-    title: 'Cloud & Database',
+    id: 'vault-collaboration',
+    title: 'Vault, Cloud & Sharing',
     icon: 'Database',
-    description: 'PostgreSQL schemas, Row Level Security (RLS), and 50MB vault quotas.',
-    items: ['cloud-vault', 'database-schemas', 'rls-policies', 'custom-smtp', 'security-redaction']
+    description: 'Managing saved assets, organizing collections, cloud backup, and sharing publicly.',
+    items: ['saved-assets-vault', 'cloud-sync-backup', 'activity-quota-management']
   },
   {
-    id: 'platform-systems',
-    title: 'Platform Architecture',
+    id: 'customization-support',
+    title: 'Customization & Themes',
     icon: 'Cpu',
-    description: 'In-App Notification Center ring buffer, SemVer 2.0, release history, and shortcuts.',
-    items: ['notifications-engine', 'version-control', 'release-history', 'keyboard-shortcuts']
+    description: 'Personalizing your workspace with 7 themes, custom presets, and system settings.',
+    items: ['theme-studio-guide', 'workspace-preferences', 'release-notes']
   }
 ];
 
@@ -38,84 +38,89 @@ export const DOCS_SECTIONS = {
   'overview': {
     id: 'overview',
     categoryId: 'getting-started',
-    title: 'Workspace Overview & Philosophy',
-    subtitle: 'High-performance creative suite uniting color science, vector geometry, and cloud sync.',
-    readTime: '4 min read',
-    tags: ['Introduction', 'Overview', 'Core'],
+    title: 'Welcome to Krasola Workspace',
+    subtitle: 'The all-in-one creative productivity suite for designers, developers, and creators.',
+    readTime: '3 min read',
+    tags: ['Overview', 'Welcome', 'Basics'],
     content: [
       {
         type: 'paragraph',
-        text: 'Krasola is an enterprise-grade multi-utility design workspace engineered to bridge the gap between creative prototyping and frontend code generation. Built on React 18 and Vite 6, the suite runs entirely client-side inside browser sandboxes with real-time cloud synchronization via Supabase PostgreSQL.'
+        text: 'Krasola is a unified creative workstation designed to streamline everyday design and frontend workflows. Instead of jumping between 5 different browser tabs, color generators, pattern makers, icon converters, and image editors, Krasola brings all these tools into a single, high-performance dashboard that runs lightning-fast in your browser.'
       },
       {
         type: 'callout',
         variant: 'tip',
-        title: 'Core Philosophy: Privacy & Zero Lock-in',
-        text: 'All color generations, pattern math, image compressions, and icon searches execute locally on your device with zero cloud latency. Cloud storage is 100% opt-in with end-to-end Row Level Security.'
+        title: 'Instant & Private by Design',
+        text: 'All color calculations, pattern generations, icon customizations, and image editing happen directly in your browser. Your designs stay private on your device with optional one-click cloud backup.'
       },
       {
         type: 'heading',
         level: 2,
-        title: 'Integrated Studio Modules'
+        title: 'What You Can Do with Krasola'
       },
       {
         type: 'table',
-        headers: ['Studio', 'Primary Capability', 'Export Formats'],
+        headers: ['Studio / Tool', 'What It Does', 'Key Capabilities & Export Options'],
         rows: [
-          ['Palette Lab', 'Algorithmic color harmony generation & WCAG 2.1 contrast math', 'CSS, Tailwind, SCSS, JSON, Swift, Android'],
-          ['Pattern Studio', 'Procedural SVG vector pattern geometry & Bézier curves', 'Clean SVG, High-Res PNG, CSS DataURI'],
-          ['Image Search Hub', 'High-res curation with Canvas lossy/lossless WebP compression', 'WebP, JPEG, PNG with EXIF stripping'],
-          ['Icon Finder', 'Lucide vector search with real-time stroke/size manipulation', 'Raw SVG, React JSX Component'],
-          ['Cloud Vault', 'Private 50MB storage quota with public showcase toggle', 'PostgreSQL JSONB / Storage Buckets'],
-          ['Notification Center', 'Real-time studio alerts with 50-item PostgreSQL ring buffer', 'Live Sync & Local Fallback']
+          ['🎨 Palette Lab', 'Generate, extract, and test color schemes', '5-color harmonies, HSL adjustments, WCAG contrast verification, CSS/Tailwind export'],
+          ['✨ Pattern Studio', 'Create seamless vector background patterns', '16 procedural patterns, angle/scale/stroke tuning, SVG & CSS DataURI export'],
+          ['🔍 Icon Finder', 'Search and customize 1,000+ vector icons', 'Live stroke width, scale, rotation, color tinting, SVG & React JSX export'],
+          ['🖼️ Image Studio', 'Search free imagery, edit and compress photos', 'Canvas filters, 5-color palette extraction, modern WebP compression'],
+          ['📂 Saved Assets', 'Centralized vault for all your creative work', 'Tagging, 1-click loading back into studios, public showcase sharing'],
+          ['⚡ Command Palette', 'Instant keyboard navigation (Ctrl+K)', 'Jump between studios, switch themes, search commands instantly']
         ]
       }
     ]
   },
 
-  'architecture': {
-    id: 'architecture',
+  'quickstart-guide': {
+    id: 'quickstart-guide',
     categoryId: 'getting-started',
-    title: 'Technology Stack & Engine Architecture',
-    subtitle: 'Under the hood of Krasola: Bundling, State, and Database pipelines.',
-    readTime: '5 min read',
-    tags: ['Architecture', 'React 18', 'Vite 6', 'Tailwind'],
+    title: 'Quickstart: 5-Minute Tour',
+    subtitle: 'Learn the core workflows to get the most out of your creative workspace.',
+    readTime: '4 min read',
+    tags: ['Quickstart', 'Tutorial', 'Walkthrough'],
     content: [
       {
         type: 'paragraph',
-        text: 'Krasola is architected using a decoupled modular structure where independent studio tools share unified Theme, Toast, and Notification contexts.'
+        text: 'Follow this 3-step workflow to create a complete project palette, generate a matching background pattern, and export code ready for your app or website.'
       },
       {
         type: 'heading',
         level: 2,
-        title: 'Core Technology Stack'
+        title: 'Step 1: Generate & Lock Your Color Palette'
       },
       {
         type: 'list',
         items: [
-          'Frontend Framework: React 18.2 with StrictMode and Concurrent Rendering.',
-          'Build Tool & Dev Server: Vite 6.2 with Rollup code-splitting and content hashing.',
-          'Styling Engine: Vanilla Tailwind CSS 3.4 with custom theme tokens & dark mode.',
-          'Icons Suite: Lucide React (over 1,000+ tree-shaken vector icons).',
-          'Cloud & Database: Supabase PostgreSQL with RLS, GoTrue Auth, and Storage Buckets.',
-          'Transactional Email: Custom SMTP via Resend API on Port 587 (TLS).'
+          'Navigate to Palette Lab from the sidebar or press Ctrl+K and type "Palette".',
+          'Press Spacebar to randomize color harmonies until you find colors you like.',
+          'Hover over any color swatch and click the Lock icon to keep your favorite colors while continuing to randomize the rest.',
+          'Check the WCAG Contrast tab to ensure your text and background colors meet accessibility standards.'
         ]
       },
       {
-        type: 'code',
-        language: 'bash',
-        title: 'Local Development & Build Commands',
-        code: `# Install dependencies with legacy peer dependency resolution
-npm install
-
-# Launch Vite development server on http://localhost:3000
-npm run dev
-
-# Compile optimized production bundle into /dist
-npm run build
-
-# Run local production preview server
-npm run preview`
+        type: 'heading',
+        level: 2,
+        title: 'Step 2: Design a Seamless Pattern with Your Palette'
+      },
+      {
+        type: 'list',
+        items: [
+          'Switch to Pattern Studio. Your active palette colors automatically sync across studios!',
+          'Select a pattern formula (e.g. Isometric Grid, Waves, Polka Dots, Memphis).',
+          'Use the interactive sliders to adjust scale, stroke thickness, angle, and tile dimensions.',
+          'Click "Inspire Me" to generate exciting randomized combinations based on your current colors.'
+        ]
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Step 3: Export Clean Assets & Code'
+      },
+      {
+        type: 'paragraph',
+        text: 'Click the Export tab in any studio to copy CSS variables, Tailwind configuration, React JSX code, or download clean SVG vector files with a single click.'
       }
     ]
   },
@@ -123,493 +128,397 @@ npm run preview`
   'pwa-installation': {
     id: 'pwa-installation',
     categoryId: 'getting-started',
-    title: 'Progressive Web App (PWA) Setup',
-    subtitle: 'Run Krasola as an independent native application across Desktop and Mobile.',
+    title: 'Installing Krasola as a Desktop / Mobile App',
+    subtitle: 'Run Krasola as an independent native application on Windows, Mac, iOS, and Android.',
     readTime: '3 min read',
-    tags: ['PWA', 'ServiceWorker', 'Offline'],
+    tags: ['PWA', 'Installation', 'Offline', 'Desktop'],
     content: [
       {
         type: 'paragraph',
-        text: 'Krasola is a certified Progressive Web Application equipped with a standalone Web App Manifest, high-resolution vector icons, and an active Service Worker (`sw.js`).'
+        text: 'Krasola is a Progressive Web Application (PWA), meaning you can install it directly onto your computer, tablet, or smartphone without visiting an app store.'
       },
       {
         type: 'callout',
-        variant: 'important',
-        title: 'Service Worker Cache Lifecycle',
-        text: 'The Service Worker utilizes the cache key `krasola-pwa-v1.1.0`. During updates, the `activate` event automatically purges older cache stores to prevent stale JavaScript execution.'
-      },
-      {
-        type: 'code',
-        language: 'javascript',
-        title: 'Service Worker Cache Invalidation (public/sw.js)',
-        code: `// Activate Event - Clean up stale cache versions
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});`
-      }
-    ]
-  },
-
-  'palette-lab': {
-    id: 'palette-lab',
-    categoryId: 'creative-studios',
-    title: 'Palette Lab & Color Science',
-    subtitle: 'Mathematical color harmonies, HSL manipulation, and WCAG 2.1 accessibility algorithms.',
-    readTime: '6 min read',
-    tags: ['Palette Lab', 'WCAG 2.1', 'Color Theory', 'HSL'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Palette Lab combines artistic color harmony theory with mathematically rigorous accessibility validation based on W3C Web Content Accessibility Guidelines (WCAG 2.1).'
+        variant: 'tip',
+        title: 'Benefits of Installing',
+        text: 'Runs in its own distraction-free window, launches instantly from your desktop or home screen, works offline for core generators, and takes up minimal disk space (< 2MB).'
       },
       {
         type: 'heading',
         level: 2,
-        title: 'WCAG 2.1 Relative Luminance & Contrast Formula'
-      },
-      {
-        type: 'paragraph',
-        text: 'To determine whether a text color passes AA (4.5:1) or AAA (7:1) contrast against a background, Krasola first converts sRGB color channels to linear relative luminance (L):'
-      },
-      {
-        type: 'code',
-        language: 'javascript',
-        title: 'Relative Luminance Calculation (sRGB to Linear L)',
-        code: `function getLuminance(r, g, b) {
-  const [lr, lg, lb] = [r, g, b].map(v => {
-    v /= 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-  return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
-}
-
-function getContrastRatio(hex1, hex2) {
-  const L1 = getLuminance(...hexToRgb(hex1));
-  const L2 = getLuminance(...hexToRgb(hex2));
-  const lighter = Math.max(L1, L2);
-  const darker = Math.min(L1, L2);
-  return (lighter + 0.05) / (darker + 0.05);
-}`
-      },
-      {
-        type: 'heading',
-        level: 2,
-        title: 'Supported Color Harmonies'
+        title: 'How to Install on Desktop (Chrome, Edge, Brave)'
       },
       {
         type: 'list',
         items: [
-          'Monochromatic: Shifts in lightness (L) and saturation (S) while keeping hue (H) fixed.',
-          'Analogous: Adjacent hues within 30° on the 360° color wheel.',
-          'Complementary: Direct opposite hues separated by exactly 180°.',
-          'Triadic: Three equidistant colors separated by 120° angles.',
-          'Tetradic (Dual Complementary): Four colors arranged into two complementary pairs (90° offset).'
+          'Look for the "Install App" button in the Krasola sidebar or header, or click the install icon in your browser URL bar.',
+          'Click "Install" when prompted by your browser.',
+          'Krasola will launch in a dedicated app window and add a shortcut to your desktop/start menu.'
         ]
-      }
-    ]
-  },
-
-  'pattern-studio': {
-    id: 'pattern-studio',
-    categoryId: 'creative-studios',
-    title: 'Pattern Studio & Vector Geometry',
-    subtitle: 'Procedural SVG generation, Bézier curve math, and real-time canvas rendering.',
-    readTime: '5 min read',
-    tags: ['Pattern Studio', 'SVG', 'Bézier', 'Vector'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Pattern Studio enables creators to generate infinite seamless repeating vector patterns with customizable scale, rotation, stroke width, opacity, and color palettes.'
       },
       {
         type: 'heading',
         level: 2,
-        title: 'Supported Pattern Algorithms'
+        title: 'How to Install on iOS (iPhone / iPad)'
       },
       {
-        type: 'table',
-        headers: ['Pattern Type', 'Mathematical Base', 'Customizable Parameters'],
-        rows: [
-          ['Isometric Grid', '30°/60° Trigonometric diamond matrix', 'Grid spacing, stroke width, isometric angle'],
-          ['Polka Dots', 'Equidistant Cartesian circle array', 'Dot radius, horizontal & vertical gap'],
-          ['Waves & Curvature', 'Cubic Bézier curves: C x1 y1, x2 y2, x y', 'Amplitude, frequency, line thickness'],
-          ['Chevron & Herringbone', 'Interlocking 45° vector segments', 'Segment width, tilt angle, row offset'],
-          ['Topographic Contours', 'Multi-layered Perlin noise elevation paths', 'Complexity, density, smooth curves'],
-          ['Memphis Geometric', 'Randomized scatter of triangles, squiggles, & crosses', 'Density, element scale, scatter seed']
+        type: 'list',
+        items: [
+          'Open Krasola in Safari on your iPhone or iPad.',
+          'Tap the Share button (the square with an arrow pointing up) at the bottom of the screen.',
+          'Scroll down and tap "Add to Home Screen", then tap "Add" in the top right corner.'
         ]
-      },
-      {
-        type: 'code',
-        language: 'javascript',
-        title: 'Clean SVG DataURI Export Pipeline',
-        code: `// Generate CSS Base64 Background URI
-export const svgToCssDataUri = (svgString) => {
-  const cleanSvg = svgString
-    .replace(/\\n/g, '')
-    .replace(/\\s+/g, ' ')
-    .replace(/[{}]/g, '');
-  return \`url("data:image/svg+xml;utf8,\${encodeURIComponent(cleanSvg)}")\`;
-};`
       }
     ]
   },
 
-  'image-search': {
-    id: 'image-search',
-    categoryId: 'creative-studios',
-    title: 'Image Search Hub & Canvas Compression Engine',
-    subtitle: 'Unsplash API integration and browser-native lossy/lossless WebP compression.',
-    readTime: '5 min read',
-    tags: ['Image Studio', 'WebP', 'Canvas', 'Unsplash'],
+  'command-palette-shortcuts': {
+    id: 'command-palette-shortcuts',
+    categoryId: 'getting-started',
+    title: 'Command Palette & Keyboard Shortcuts',
+    subtitle: 'Speed up your workflow with universal keyboard navigation and instant search.',
+    readTime: '2 min read',
+    tags: ['Shortcuts', 'Command Palette', 'Keyboard', 'Hotkeys'],
     content: [
       {
         type: 'paragraph',
-        text: 'The Image Search Hub allows creators to curate high-resolution imagery, perform client-side Canvas editing (brightness, contrast, hue, saturation, blur), and compress images by up to 85% using modern WebP formats before saving to the Cloud Vault.'
-      },
-      {
-        type: 'callout',
-        variant: 'tip',
-        title: 'Client-Side Canvas Compression Pipeline',
-        text: 'Images are drawn to an off-screen HTML5 `<canvas>` element and exported via `canvas.toBlob(callback, "image/webp", quality)`. This strips bulky camera EXIF metadata and optimizes storage quota.'
-      },
-      {
-        type: 'code',
-        language: 'javascript',
-        title: 'Off-screen Canvas Compression Engine (src/utils/imageCompression.js)',
-        code: `export const compressImageBlob = async (file, quality = 0.85, maxWidth = 1920) => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const scale = maxWidth / Math.max(img.width, maxWidth);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => resolve(blob), 'image/webp', quality);
-    };
-    img.src = URL.createObjectURL(file);
-  });
-};`
-      }
-    ]
-  },
-
-  'icon-finder': {
-    id: 'icon-finder',
-    categoryId: 'creative-studios',
-    title: 'Icon Finder Studio',
-    subtitle: 'Instant fuzzy search across 1,000+ vector Lucide icons with 1-click SVG and JSX export.',
-    readTime: '3 min read',
-    tags: ['Icons', 'Lucide', 'SVG', 'JSX'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Icon Finder embeds the full Lucide vector catalog with real-time client-side fuzzy keyword matching, interactive stroke adjustments (1px to 3px), color tinting, and 1-click exports for SVG, React JSX, and Vue components.'
-      }
-    ]
-  },
-
-  'cloud-vault': {
-    id: 'cloud-vault',
-    categoryId: 'cloud-security',
-    title: 'Cloud Vault & Storage Quotas',
-    subtitle: '50MB creator quota management, public showcase sharing, and offline sync.',
-    readTime: '4 min read',
-    tags: ['Cloud Vault', 'Storage Quota', '50MB', 'Supabase'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Every Krasola account includes a dedicated **50MB Cloud Vault**. Storage is calculated across palettes, patterns, and compressed WebP artwork.'
+        text: 'Power users can control nearly everything in Krasola using the universal Command Palette and keyboard hotkeys without taking their hands off the keyboard.'
       },
       {
         type: 'callout',
         variant: 'note',
-        title: 'Automated Quota Calculation',
-        text: 'The table `public.user_storage_quotas` tracks `used_bytes` vs `max_bytes (52,428,800 bytes)`. When quota usage exceeds 80%, the system automatically emits a notification.'
-      }
-    ]
-  },
-
-  'database-schemas': {
-    id: 'database-schemas',
-    categoryId: 'cloud-security',
-    title: 'Supabase PostgreSQL Schemas',
-    subtitle: 'Exact database table architectures, column definitions, and foreign keys.',
-    readTime: '6 min read',
-    tags: ['Database', 'PostgreSQL', 'Schemas', 'Supabase'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Below are the exact production PostgreSQL table definitions deployed in Krasola Supabase database:'
-      },
-      {
-        type: 'code',
-        language: 'sql',
-        title: 'Production PostgreSQL Table DDLs',
-        code: `-- 1. User Profiles Table
-CREATE TABLE public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  username TEXT UNIQUE NOT NULL,
-  bio TEXT,
-  avatar_style TEXT DEFAULT 'geometric',
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 2. Platform & Community Palettes
-CREATE TABLE public.platform_palettes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  colors JSONB NOT NULL, -- Array of hex strings
-  is_public BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 3. User Storage Quotas
-CREATE TABLE public.user_storage_quotas (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  used_bytes BIGINT DEFAULT 0,
-  max_bytes BIGINT DEFAULT 52428800, -- 50 Megabytes
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 4. User Notifications (50-Item Ring Buffer)
-CREATE TABLE public.user_notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  message TEXT NOT NULL,
-  type TEXT DEFAULT 'info',
-  category TEXT DEFAULT 'general',
-  action_tab TEXT,
-  action_payload JSONB DEFAULT '{}'::jsonb,
-  is_read BOOLEAN DEFAULT false,
-  read_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT now()
-);`
-      }
-    ]
-  },
-
-  'rls-policies': {
-    id: 'rls-policies',
-    categoryId: 'cloud-security',
-    title: 'Row Level Security (RLS) Policies',
-    subtitle: 'Security isolation rules ensuring absolute privacy of creator assets.',
-    readTime: '4 min read',
-    tags: ['Security', 'RLS', 'PostgreSQL', 'Privacy'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Every table in Krasola enforces PostgreSQL Row Level Security (RLS). Users can only view, mutate, or delete records where `auth.uid() = user_id`, while public community assets are readable by all authenticated users.'
-      },
-      {
-        type: 'code',
-        language: 'sql',
-        title: 'Row Level Security Policies Sample',
-        code: `-- Enable RLS on notifications
-ALTER TABLE public.user_notifications ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can select own notifications"
-  ON public.user_notifications FOR SELECT
-  TO authenticated
-  USING ((SELECT auth.uid()) = user_id);
-
-CREATE POLICY "Users can insert own notifications"
-  ON public.user_notifications FOR INSERT
-  TO authenticated
-  WITH CHECK ((SELECT auth.uid()) = user_id);`
-      }
-    ]
-  },
-
-  'custom-smtp': {
-    id: 'custom-smtp',
-    categoryId: 'cloud-security',
-    title: 'Authentication & Custom SMTP Delivery',
-    subtitle: 'Supabase GoTrue Auth connected to Resend on krasola.ambrisoft.com.',
-    readTime: '4 min read',
-    tags: ['Auth', 'SMTP', 'Resend', 'GoTrue'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'Krasola utilizes Supabase GoTrue Auth with custom SMTP email dispatch powered by Resend for verified transactional email delivery.'
+        title: 'Universal Shortcut: Ctrl + K (or Cmd + K)',
+        text: 'Press Ctrl+K anywhere in the application to open the Command Palette. Type to search studios, switch themes, open settings, or trigger quick actions.'
       },
       {
         type: 'table',
-        headers: ['Configuration Parameter', 'Production Setting', 'Purpose'],
+        headers: ['Shortcut', 'Where It Works', 'What It Does'],
         rows: [
-          ['Sender Email', 'noreply@krasola.ambrisoft.com', 'Matches verified Resend subdomain'],
-          ['Sender Name', 'Krasola', 'Brand identifier in inbox'],
-          ['SMTP Host', 'smtp.resend.com', 'Resend SMTP Gateway'],
-          ['Port Number', '587 (TLS / STARTTLS)', 'Required for GoTrue STARTTLS connection'],
-          ['SMTP Username', 'resend', 'Standard Resend user'],
-          ['SMTP Password', 're_****************', 'Resend API Key with Sending Access (Masked)']
+          ['Ctrl + K / Cmd + K', 'Everywhere', 'Opens the global Command Search Hub'],
+          ['Space', 'Palette Lab', 'Randomize color palette harmonies'],
+          ['1, 2, 3, 4, 5', 'Palette Lab', 'Quick toggle lock on column 1 through 5'],
+          ['Ctrl + S / Cmd + S', 'Palette / Pattern', 'Open the Save Asset dialog'],
+          ['Esc', 'Modals / Drawers', 'Close active modal, drawer, or search dialog'],
+          ['↑ / ↓ + Enter', 'Command Palette', 'Navigate through search results and execute']
         ]
       }
     ]
   },
 
-  'security-redaction': {
-    id: 'security-redaction',
-    categoryId: 'cloud-security',
-    title: 'Security & Secret Redaction Policy',
-    subtitle: 'Information disclosure standards and secret masking protocols.',
-    readTime: '4 min read',
-    tags: ['Security', 'Redaction', 'Secrets', 'Compliance'],
-    content: [
-      {
-        type: 'paragraph',
-        text: 'In accordance with enterprise developer security guidelines (Stripe, AWS, Supabase), all Krasola technical documentation enforces a zero-secrets disclosure policy.'
-      },
-      {
-        type: 'callout',
-        variant: 'important',
-        title: 'Information Classification Rules',
-        text: 'Public documentation includes architectural DDLs, client-side configs, and math algorithms. All secret keys (service_role, SMTP passwords, JWT secrets, database connection passwords) are strictly masked or redacted.'
-      },
-      {
-        type: 'table',
-        headers: ['Asset Type', 'Classification', 'Treatment in Docs'],
-        rows: [
-          ['Architecture DDLs & Types', '🟢 Public', 'Full definition displayed'],
-          ['Client Configs (anon_key, URL)', '🟢 Public', 'Shown with standard placeholders'],
-          ['Private User PII / Emails', '🔴 Strictly Redacted', 'Replaced with generic developer mocks (e.g. user@example.com)'],
-          ['Service Role Secret Keys', '🔴 Strictly Redacted', 'Never included or rendered in any documentation'],
-          ['SMTP / API Auth Keys', '🟡 Masked', 'Masked notation: re_**************** or process.env.KEY']
-        ]
-      }
-    ]
-  },
-
-  'notifications-engine': {
-    id: 'notifications-engine',
-    categoryId: 'platform-systems',
-    title: 'Notification Center & 50-Item Ring Buffer',
-    subtitle: 'Real-time database trigger that auto-prunes notifications beyond 50 entries.',
+  'palette-lab-guide': {
+    id: 'palette-lab-guide',
+    categoryId: 'creative-studios',
+    title: 'Palette Lab: User Guide & Features',
+    subtitle: 'Master color harmonies, HSL adjustments, and accessibility validation.',
     readTime: '5 min read',
-    tags: ['Notifications', 'Ring Buffer', 'PostgreSQL Trigger', 'Real-Time'],
+    tags: ['Palette Lab', 'Color Schemes', 'WCAG', 'Export'],
     content: [
       {
         type: 'paragraph',
-        text: 'The In-App Notification Center provides real-time feedback when assets are saved, quotas are reached, or security events occur. To prevent database bloating, it employs an automated PostgreSQL Ring Buffer trigger.'
+        text: 'Palette Lab is your dedicated color laboratory for discovering, refining, and exporting stunning color combinations for digital products, branding, and user interfaces.'
       },
       {
         type: 'heading',
         level: 2,
-        title: 'PostgreSQL Ring-Buffer Trigger Function'
+        title: 'Core Tools & Sub-Views'
       },
       {
-        type: 'code',
-        language: 'sql',
-        title: 'Automatic 50-Item Ring Buffer Pruning Trigger',
-        code: `CREATE OR REPLACE FUNCTION public.prune_user_notifications_ring_buffer()
-RETURNS TRIGGER AS $$
-BEGIN
-  DELETE FROM public.user_notifications
-  WHERE id IN (
-    SELECT id FROM public.user_notifications
-    WHERE user_id = NEW.user_id
-    ORDER BY created_at DESC
-    OFFSET 50
-  );
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER tr_prune_user_notifications
-AFTER INSERT ON public.user_notifications
-FOR EACH ROW
-EXECUTE FUNCTION public.prune_user_notifications_ring_buffer();`
+        type: 'list',
+        items: [
+          'Generator Canvas: The main interactive playground. Hit Space to generate harmonies, lock favorite swatches, and drag columns to reorder.',
+          'Explorer Hub: Browse curated preset palettes categorized by mood (e.g. Modern UI, Pastel Calm, Sunset Glow, Cyberpunk). Click any preset to load it directly into your workspace.',
+          'Extractor Studio: Upload any image or photo to automatically detect and extract its 5 dominant colors.',
+          'Accessibility Lab: Real-time WCAG 2.1 contrast checker. See whether any text color meets AA (4.5:1) or AAA (7:1) readability ratings against background colors.',
+          'Visualizer Arena: Preview your active palette rendered across real UI mockups (landing pages, mobile dashboards, button states, and charts).'
+        ]
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Export Options'
+      },
+      {
+        type: 'paragraph',
+        text: 'Palette Lab lets you export your colors in formats ready for any developer stack: CSS Custom Properties (--color-1), Tailwind CSS config object, JSON array, or download vector SVG swatches.'
       }
     ]
   },
 
-  'version-control': {
-    id: 'version-control',
-    categoryId: 'platform-systems',
-    title: 'Semantic Versioning & Release Lifecycle',
-    subtitle: 'SemVer 2.0 principles, build-time injection, and live update checking.',
-    readTime: '4 min read',
-    tags: ['SemVer', 'Vite define', 'Release', 'Version'],
+  'pattern-studio-guide': {
+    id: 'pattern-studio-guide',
+    categoryId: 'creative-studios',
+    title: 'Pattern Studio: Vector Backgrounds',
+    subtitle: 'Create seamless repeating vector textures and geometric graphics.',
+    readTime: '5 min read',
+    tags: ['Pattern Studio', 'SVG', 'Textures', 'Backgrounds'],
     content: [
       {
         type: 'paragraph',
-        text: 'Krasola follows Semantic Versioning 2.0 (`MAJOR.MINOR.PATCH`). Compile-time global constants (`__APP_VERSION__`, `__COMMIT_HASH__`, `__BUILD_TIMESTAMP__`) are injected on every build via `vite.config.js`.'
+        text: 'Pattern Studio allows you to create high-resolution, infinitely scalable vector patterns for website backgrounds, UI cards, illustrations, and print materials.'
       },
       {
-        type: 'table',
-        headers: ['SemVer Level', 'Example Shift', 'Criteria'],
-        rows: [
-          ['MAJOR (X.0.0)', '1.0.0 ➔ 2.0.0', 'Incompatible API changes, breaking database migrations.'],
-          ['MINOR (1.Y.0)', '1.0.0 ➔ 1.1.0', 'New backward-compatible features (e.g. Notification Center).'],
-          ['PATCH (1.1.Z)', '1.1.0 ➔ 1.1.1', 'Bug fixes, styling alignments, telemetry resilience.']
+        type: 'heading',
+        level: 2,
+        title: 'Pattern Customization Controls'
+      },
+      {
+        type: 'list',
+        items: [
+          'Pattern Formulas: Choose from 16 distinct geometric styles including Isometric Grids, Waves, Topographic Contours, Polka Dots, Herringbone, Crosses, and Hexagons.',
+          'Tile Dimensions: Adjust Width and Height to change pattern density and repetition intervals.',
+          'Scale & Zoom: Dynamically scale elements from subtle micro-textures to bold hero graphics.',
+          'Stroke Width & Angle: Fine-tune line thickness and rotation angles from 0° to 360°.',
+          'Color Palette Link: Toggle palette syncing to automatically apply your active Palette Lab colors to the pattern background and foreground elements.'
+        ]
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Exporting Your Patterns'
+      },
+      {
+        type: 'paragraph',
+        text: 'Export your pattern as a clean SVG file, a high-resolution PNG image, or a 1-click CSS DataURI background snippet ready to paste directly into your stylesheet.'
+      }
+    ]
+  },
+
+  'icon-finder-guide': {
+    id: 'icon-finder-guide',
+    categoryId: 'creative-studios',
+    title: 'Icon Finder: Vector Icons Library',
+    subtitle: 'Search, customize, and export over 1,000+ crisp Lucide vector icons.',
+    readTime: '3 min read',
+    tags: ['Icon Finder', 'Lucide Icons', 'SVG', 'React JSX'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Icon Finder provides instant access to the entire Lucide icon library with real-time keyword search, interactive customization, and multiple export formats.'
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'How to Customize Icons'
+      },
+      {
+        type: 'list',
+        items: [
+          'Search: Type any term (e.g. "user", "cloud", "arrow", "settings") to filter icons with instant fuzzy matching.',
+          'Size & Stroke Slider: Adjust icon pixel dimensions (16px to 96px) and stroke weight (1px to 3px) in real time.',
+          'Color Tinting: Pick custom colors or click any swatch from your active palette to colorize the icon.',
+          'Rotation: Rotate icons in 90° increments or flip horizontally/vertically.'
+        ]
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'One-Click Code Export'
+      },
+      {
+        type: 'paragraph',
+        text: 'Click on any icon to copy clean SVG vector code, React JSX syntax (e.g. `<User size={24} color="#6366f1" />`), or save it directly to your personal Saved Assets vault.'
+      }
+    ]
+  },
+
+  'image-studio-guide': {
+    id: 'image-studio-guide',
+    categoryId: 'creative-studios',
+    title: 'Image Studio: Search, Edit & Extract',
+    subtitle: 'Search millions of free images, edit on canvas, and compress to WebP.',
+    readTime: '4 min read',
+    tags: ['Image Studio', 'Photo Search', 'Canvas Editor', 'WebP'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Image Studio brings together free royalty-free photo search, live browser photo editing, palette extraction, and high-efficiency WebP compression.'
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Key Features'
+      },
+      {
+        type: 'list',
+        items: [
+          'High-Resolution Search: Search millions of curated free photos by keyword, orientation (landscape, portrait, square), and color tone.',
+          'Live Canvas Editor: Adjust brightness, contrast, saturation, hue rotation, sepia, and blur with 60 FPS real-time feedback.',
+          'Color Palette Extraction: Automatically detect the 5 most dominant colors in any photo and send them to Palette Lab with 1 click.',
+          'Client-Side WebP Compression: Compress high-res images by up to 85% with zero quality loss before downloading or saving to the Cloud Vault.'
         ]
       }
     ]
   },
 
-  'release-history': {
-    id: 'release-history',
-    categoryId: 'platform-systems',
-    title: 'Platform Changelog & Release Lineage',
-    subtitle: '100% genuine chronological record of all production releases and feature additions.',
-    readTime: '4 min read',
-    tags: ['Changelog', 'Releases', 'History', 'Lineage'],
+  'saved-assets-vault': {
+    id: 'saved-assets-vault',
+    categoryId: 'vault-collaboration',
+    title: 'Saved Assets Vault: Organization & Management',
+    subtitle: 'Store, categorize, reload, and organize all your creative assets in one place.',
+    readTime: '3 min read',
+    tags: ['Saved Assets', 'Vault', 'Organization', 'Collections'],
     content: [
       {
         type: 'paragraph',
-        text: 'Krasola maintains a strict, transparent release history conforming to SemVer 2.0 and Keep a Changelog specifications. Below is the historical catalog of all versions.'
+        text: 'The Saved Assets studio is your central library for every color palette, vector pattern, customized icon, and edited image you save while using Krasola.'
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Managing Your Saved Items'
+      },
+      {
+        type: 'list',
+        items: [
+          'Category Tabs: Filter your library by Palettes, Patterns, Icons, or Images.',
+          '1-Click Studio Reload: Click "Load into Workspace" on any saved palette or pattern to immediately restore it in its creator studio.',
+          'Copy & Export: Copy HEX codes, CSS snippets, or SVG data directly from your saved asset cards without reopening the studios.',
+          'Delete & Cleanup: Remove individual assets or clear caches whenever needed.'
+        ]
+      }
+    ]
+  },
+
+  'cloud-sync-backup': {
+    id: 'cloud-sync-backup',
+    categoryId: 'vault-collaboration',
+    title: 'Cloud Sync & Public Showcase',
+    subtitle: 'Sync designs across all your devices and showcase creations with the community.',
+    readTime: '3 min read',
+    tags: ['Cloud Sync', 'Account', 'Public Showcase', 'Backup'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Create a free Krasola account to unlock seamless cloud synchronization across all your computers, laptops, and mobile devices.'
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Guest vs. Cloud Account Features'
       },
       {
         type: 'table',
-        headers: ['Version', 'Type', 'Date', 'Key Deliverables'],
+        headers: ['Feature', 'Guest Mode (Offline)', 'Cloud Account (Free)'],
         rows: [
-          ['v1.2.3', 'Patch', '2026-08-18', 'Fixed runtime Sun/Moon icon imports in App.jsx for mobile theme toggle.'],
-          ['v1.2.2', 'Patch', '2026-08-18', 'Mobile-first navigation overhaul, 48px touch targets, bottom sheets, sub-tab carousels.'],
-          ['v1.2.1', 'Patch', '2026-08-18', 'Automated release engine (scripts/auto-version.js) & light theme contrast polish.'],
-          ['v1.2.0', 'Minor', '2026-08-18', 'Diátaxis Documentation Studio, Secrets Redaction, Ctrl+K search modal.'],
-          ['v1.1.0', 'Minor', '2026-08-17', 'In-App Notification Center, 50-item PG ring buffer, SemVer diagnostics, HTML email suite.'],
-          ['v1.0.0', 'Major', '2026-08-14', 'Initial production release: Palette Lab, Pattern Studio (1,024 presets), Icon Finder, Cloud Vault, PWA.']
+          ['Palette & Pattern Storage', 'Local browser storage', 'Synchronized cloud database'],
+          ['Multi-Device Sync', '❌ Limited to single device', '✅ Seamless across all devices'],
+          ['Cloud Image Storage', '❌ Browser memory only', '✅ 50MB dedicated image vault'],
+          ['Public Showcase Sharing', '❌ Local only', '✅ Toggle assets public/private'],
+          ['Auto Guest Migration', 'N/A', '✅ Automatically transfers guest items on login']
+        ]
+      }
+    ]
+  },
+
+  'activity-quota-management': {
+    id: 'activity-quota-management',
+    categoryId: 'vault-collaboration',
+    title: 'Usage & Activity Hub',
+    subtitle: 'Monitor storage quotas, system performance, and your creative timeline.',
+    readTime: '2 min read',
+    tags: ['Usage', 'Storage Quota', 'Telemetry', 'Activity'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'The Usage & Activity Hub gives you real-time visibility into your account storage, item counts, and recent creative operations.'
+      },
+      {
+        type: 'list',
+        items: [
+          'Storage Quota Gauge: View exactly how many megabytes out of your 50MB vault quota you have used.',
+          'Asset Breakdown: Visual charts showing the percentage split between saved palettes, patterns, icons, and photos.',
+          'Recent Activity Feed: A chronological timeline of your recent saves, exports, and edits.'
+        ]
+      }
+    ]
+  },
+
+  'theme-studio-guide': {
+    id: 'theme-studio-guide',
+    categoryId: 'customization-support',
+    title: 'Theme Studio & Color Aesthetics',
+    subtitle: 'Personalize Krasola with 7 curated dark and light workspace themes.',
+    readTime: '3 min read',
+    tags: ['Themes', 'Theme Studio', 'Dark Mode', 'Appearance'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Krasola includes 7 professionally tuned workspace themes engineered for optimal visual ergonomics, zero eye-strain, and high contrast.'
+      },
+      {
+        type: 'heading',
+        level: 2,
+        title: 'Built-In Theme Presets'
+      },
+      {
+        type: 'table',
+        headers: ['Theme Preset', 'Mode', 'Vibe & Aesthetic'],
+        rows: [
+          ['Midnight Dark', 'Dark', 'Deep navy-slate workspace with vibrant indigo highlights (Default)'],
+          ['Snowy Light', 'Light', 'Crisp, high-contrast daylight workspace with clean slate borders'],
+          ['Nordic Frost', 'Dark', 'Arctic-inspired polar night slate with glacial frost cyan accents'],
+          ['Dracula Castle', 'Dark', 'Vampiric dark theme with neon purple and gothic accents'],
+          ['Gruvbox Retro', 'Dark', 'Warm, earthy groove retro palette with golden yellow highlights'],
+          ['Solarized Warm', 'Light', 'Warm daylight cream palette engineered for low eye-strain reading'],
+          ['Cyberpunk Neon', 'Dark', 'High-voltage synthwave violet with neon pink & cyan glow']
         ]
       },
       {
         type: 'callout',
         variant: 'tip',
-        title: 'Interactive Release Explorer',
-        text: 'You can also browse, filter, search, and copy commit SHAs interactively by navigating to Settings Studio ➔ System Diagnostics ➔ "View Changelog & Releases".'
+        title: 'Quick Switching',
+        text: 'Click the Theme pill in the desktop header or press Ctrl+K and type the theme name (e.g. "Nord", "Dracula") to switch instantly without reloading the page.'
       }
     ]
   },
 
-  'keyboard-shortcuts': {
-    id: 'keyboard-shortcuts',
-    categoryId: 'platform-systems',
-    title: 'Keyboard Shortcuts & Hotkeys Matrix',
-    subtitle: 'Boost creator productivity with quick keyboard commands.',
+  'workspace-preferences': {
+    id: 'workspace-preferences',
+    categoryId: 'customization-support',
+    title: 'Settings & Workspace Preferences',
+    subtitle: 'Customize ambient glow, default startup tab, and keyboard helpers.',
     readTime: '2 min read',
-    tags: ['Shortcuts', 'Hotkeys', 'Productivity'],
+    tags: ['Settings', 'Preferences', 'Glow', 'Defaults'],
     content: [
       {
+        type: 'paragraph',
+        text: 'Customize Krasola to fit your exact working style by visiting the Settings Studio from the sidebar footer.'
+      },
+      {
+        type: 'list',
+        items: [
+          'Ambient Glow Effects: Toggle background blur ambient lighting on or off for increased performance on older devices.',
+          'Default Startup Tab: Choose which studio (Home, Palette Lab, Pattern Studio, etc.) loads automatically when you open Krasola.',
+          'Keyboard Shortcut Hints: Toggle on-screen keyboard hints in studio headers.',
+          'Data Backup & Restore: Export all your local designs as a JSON backup file or import assets from another device.'
+        ]
+      }
+    ]
+  },
+
+  'release-notes': {
+    id: 'release-notes',
+    categoryId: 'customization-support',
+    title: 'Platform Releases & Version Lineage',
+    subtitle: 'Stay up to date with new features, improvements, and updates.',
+    readTime: '3 min read',
+    tags: ['Changelog', 'Updates', 'Releases', 'New Features'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Krasola follows a continuous release cadence. You can view the full interactive changelog and commit history inside Settings ➔ System Diagnostics.'
+      },
+      {
         type: 'table',
-        headers: ['Key Combination', 'Studio Scope', 'Action Triggered'],
+        headers: ['Release', 'Highlights'],
         rows: [
-          ['Space', 'Palette Lab', 'Randomize & generate new color harmony palette'],
-          ['Ctrl + K / Cmd + K', 'Global', 'Open Documentation Search Command Palette'],
-          ['Ctrl + S / Cmd + S', 'Palette / Pattern', 'Open Save Asset Modal'],
-          ['1 .. 5', 'Palette Lab', 'Toggle lock on individual color column slot'],
-          ['Esc', 'Modals / Drawer', 'Close active modal, drawer, or search dialog']
+          ['v1.3.0', 'Universal Ctrl+K Command Palette, interactive Theme Studio modal with dynamic swatches, CSS custom property token engine, and navigation de-cluttering.'],
+          ['v1.2.3', 'Fixed runtime theme toggle icon imports and mobile light mode switching.'],
+          ['v1.2.2', 'Mobile-first platform overhaul with 48px touch targets, bottom dock, and responsive sub-tab carousels.'],
+          ['v1.2.1', 'Automated versioning engine and light theme contrast enhancements.'],
+          ['v1.2.0', 'Integrated Documentation Studio, secrets redaction architecture, and code blocks.'],
+          ['v1.1.0', 'In-App Notification Center with real-time alerts and account diagnostic tools.'],
+          ['v1.0.0', 'Initial public release of Krasola Multi-Utility Workspace.']
         ]
       }
     ]

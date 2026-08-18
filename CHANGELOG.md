@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.1] - 2026-08-18
+
+### Changed
+- Complete overhaul of Documentation Studio: Removed internal backend architectures, DDLs, and raw configuration tables, replacing them with user-centric feature guides, tutorials, workflows, shortcuts, and best practices.
+
+---
+
 ## [1.3.0] - 2026-08-18
 
 ### Added

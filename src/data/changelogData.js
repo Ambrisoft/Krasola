@@ -5,6 +5,20 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.3.1',
+    date: '2026-08-18',
+    type: 'patch',
+    title: 'User-Centric Documentation & Feature Guides Overhaul',
+    commit: 'HEAD',
+    summary: 'Refactored documentation to prioritize user workflows, how-to guides, shortcuts, and platform feature instructions over internal technical backend details.',
+    changes: {
+      changed: [
+        'Transformed Documentation Studio into a practical user guide covering step-by-step studio workflows, tips, shortcuts, and PWA setup.',
+        'Removed redundant internal PostgreSQL schemas and raw backend architectures to keep user interface clean and accessible.'
+      ]
+    }
+  },
+  {
     version: '1.3.0',
     date: '2026-08-18',
     type: 'minor',
