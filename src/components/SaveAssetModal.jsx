@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Lock, Globe, Sparkles, Check, Info, Shield } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useNotifications } from '../context/NotificationContext';
 import { getUniquePaletteName, getUniquePatternName } from '../utils/namingUtils';
 import { formatBytes } from '../utils/imageCompression';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
@@ -17,6 +18,7 @@ export default function SaveAssetModal({
   isLoggedIn = false
 }) {
   const { theme } = useTheme();
+  const { addNotification } = useNotifications();
   const [assetName, setAssetName] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -67,13 +69,24 @@ export default function SaveAssetModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!assetName.trim()) return;
+    const cleanName = assetName.trim();
+    if (!cleanName) return;
+
     onSave({
-      name: assetName.trim(),
-      title: assetName.trim(),
+      name: cleanName,
+      title: cleanName,
       isPublic: isLoggedIn ? isPublic : false,
       imageData: imageData
     });
+
+    addNotification({
+      title: `${assetType === 'palette' ? 'Palette' : assetType === 'pattern' ? 'Pattern' : 'Image'} Saved`,
+      message: `"${cleanName}" was successfully saved to your ${isLoggedIn ? (isPublic ? 'Public Showcase' : 'Private Cloud Vault') : 'Local Storage'}.`,
+      type: 'asset_saved',
+      category: assetType,
+      actionTab: 'saved'
+    });
+
     onClose();
   };
 

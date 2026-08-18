@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { useNotifications } from '../context/NotificationContext';
 import { THEMES } from '../utils/themeUtils';
 import { supabase, isSupabaseConfigured, getUserStorageQuota } from '../utils/supabaseClient';
 import { formatBytes } from '../utils/imageCompression';
@@ -20,6 +21,7 @@ export default function Account({
 }) {
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
@@ -179,6 +181,13 @@ export default function Account({
       if (error) throw error;
       logActivity('Sign in completed');
       toast.success('Welcome back to Krasola!');
+      addNotification({
+        title: 'Welcome Back',
+        message: 'You have signed in to your Krasola Cloud Workspace.',
+        type: 'security',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Login failed.');
     } finally {
@@ -202,6 +211,13 @@ export default function Account({
       if (error) throw error;
       toast.success('Success! Check your email inbox for the magic sign-in link.');
       logActivity('Requested magic link sign in');
+      addNotification({
+        title: 'Magic Link Requested',
+        message: `A sign-in link was dispatched to ${email}.`,
+        type: 'security',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Magic link request failed.');
     } finally {
@@ -241,6 +257,13 @@ export default function Account({
       });
       if (error) throw error;
       toast.success('Sign up successful! Please check your email for confirmation.');
+      addNotification({
+        title: 'Account Created',
+        message: 'Your Krasola account has been initialized with 50MB cloud vault.',
+        type: 'system',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Sign up failed.');
     } finally {
@@ -291,6 +314,13 @@ export default function Account({
 
       logActivity('Profile details updated');
       toast.success('Profile details updated successfully!');
+      addNotification({
+        title: 'Profile Updated',
+        message: `Your creator profile details have been saved successfully.`,
+        type: 'system',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Update failed.');
     } finally {
@@ -307,6 +337,13 @@ export default function Account({
       if (error) throw error;
       logActivity('Revoked other device sessions');
       toast.info('Logged out of all other active sessions.');
+      addNotification({
+        title: 'Device Sessions Revoked',
+        message: 'All other active browser and device sessions have been terminated.',
+        type: 'security',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Revocation failed.');
     } finally {
@@ -328,6 +365,13 @@ export default function Account({
       setNewPassword('');
       logActivity('Password credentials rotated');
       toast.success('Password updated successfully!');
+      addNotification({
+        title: 'Security Alert: Password Changed',
+        message: 'Your account password credentials were rotated successfully.',
+        type: 'security',
+        category: 'account',
+        actionTab: 'account'
+      });
     } catch (err) {
       toast.error(err.message || 'Password update failed.');
     } finally {
@@ -351,6 +395,13 @@ export default function Account({
     downloadAnchor.remove();
     logActivity('Bulk backup exported');
     toast.success('Backup downloaded successfully!');
+    addNotification({
+      title: 'Vault Backup Exported',
+      message: 'A complete JSON snapshot of your palettes and patterns was exported.',
+      type: 'export',
+      category: 'general',
+      actionTab: 'saved'
+    });
   };
 
   // Bulk Delete Cloud Data

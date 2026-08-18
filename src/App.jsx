@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
+import { useNotifications } from './context/NotificationContext';
 import Home from './components/Home';
 import PaletteLab from './components/PaletteLab';
 import PatternStudio from './components/PatternStudio';
@@ -13,6 +14,7 @@ import SettingsComponent from './components/Settings';
 import Account from './components/Account';
 import Monitoring from './components/Monitoring';
 import PwaInstallModal from './components/pwa/PwaInstallModal';
+import { NotificationCenterDrawer } from './components/notification/NotificationCenterDrawer';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 import { recordUserActivity } from './utils/telemetryTracker';
@@ -62,6 +64,7 @@ export default function App() {
   // Consume global ThemeContext and ToastContext
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
   const { toast, showToast } = useToast();
+  const { unreadCount, toggleDrawer } = useNotifications();
 
   // User auth state tracker
   const [user, setUser] = useState(null);
@@ -839,6 +842,22 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Mobile Notification Bell */}
+            <button
+              onClick={toggleDrawer}
+              className={`p-2 rounded-xl border relative transition-all ${
+                theme.isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-700'
+              }`}
+              title="Notifications"
+            >
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white font-extrabold text-[9px] rounded-full flex items-center justify-center shadow-sm">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
             {!isInstalled && (
               <button
                 onClick={() => setIsInstallModalOpen(true)}
@@ -920,6 +939,24 @@ export default function App() {
                 <span>Press <kbd className="font-bold bg-black/10 px-1 py-0.5 rounded text-[10px]">Space</kbd> to Randomize</span>
               </div>
             )}
+
+            {/* Desktop Notification Bell */}
+            <button
+              onClick={toggleDrawer}
+              className={`p-2 rounded-xl border relative transition-all ${
+                theme.isDark 
+                  ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-200' 
+                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+              }`}
+              title="Open Notifications"
+            >
+              <Bell size={15} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white font-extrabold text-[9px] rounded-full flex items-center justify-center shadow-md animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
 
             {/* Global Theme selector */}
             <div className="flex items-center gap-2">
@@ -1247,6 +1284,12 @@ export default function App() {
       <PwaInstallModal 
         isOpen={isInstallModalOpen} 
         onClose={() => setIsInstallModalOpen(false)} 
+      />
+
+      {/* Unified In-App Notification Center Drawer */}
+      <NotificationCenterDrawer 
+        theme={theme} 
+        onNavigateTab={setActiveTab} 
       />
     </div>
   );
