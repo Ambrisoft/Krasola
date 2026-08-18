@@ -18,6 +18,7 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { THEMES } from '../utils/themeUtils';
+import { APP_VERSION, COMMIT_HASH, APP_STAGE, getFormattedBuildDate, checkForAppUpdates } from '../utils/versionManager';
 
 export default function SettingsComponent({ 
   savedPalettes, 
@@ -36,8 +37,26 @@ export default function SettingsComponent({
   setDefaultTab
 }) {
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
+  const { toast } = useToast();
   const [activeSection, setActiveSection] = useState('general');
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const fileInputRef = useRef(null);
+
+  const handleCheckUpdate = async () => {
+    setIsCheckingUpdate(true);
+    try {
+      const result = await checkForAppUpdates();
+      if (result.hasUpdate) {
+        toast.info(`New version v${result.latestVersion} available! Reload to update.`);
+      } else {
+        toast.success(`You are on the latest version (v${APP_VERSION}).`);
+      }
+    } catch {
+      toast.info(`Version v${APP_VERSION} is currently active.`);
+    } finally {
+      setIsCheckingUpdate(false);
+    }
+  };
   const [importStatus, setImportStatus] = useState(null);
 
   // Export data
@@ -84,8 +103,6 @@ export default function SettingsComponent({
     };
     reader.readAsText(file);
   };
-
-  const { toast } = useToast();
 
   // Reset all data
   const handleResetAll = () => {
@@ -363,38 +380,82 @@ export default function SettingsComponent({
           </div>
         )}
 
-        {/* About Tab */}
+        {/* About & Version Information Tab */}
         {activeSection === 'about' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold tracking-tight">About Krasola</h3>
-              <p className={`text-xs ${theme.textMuted}`}>Learn more about the creator studio and layout.</p>
+              <p className={`text-xs ${theme.textMuted}`}>Platform diagnostics, version control, and engine architecture.</p>
             </div>
 
             <div className={`border rounded-2xl p-6 space-y-6 ${theme.card}`}>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-extrabold text-3xl">
-                  K
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-extrabold text-3xl shrink-0">
+                    K
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-lg font-bold">Krasola Creative Suite</h4>
+                      <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        {APP_STAGE}
+                      </span>
+                    </div>
+                    <p className={`text-xs ${theme.textMuted}`}>SemVer {APP_VERSION} &middot; Commit {COMMIT_HASH}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-lg font-bold">Krasola Creative Suite</h4>
-                  <p className={`text-xs ${theme.textMuted}`}>Version 1.0.0 (Release Build)</p>
-                </div>
+
+                <button
+                  onClick={handleCheckUpdate}
+                  disabled={isCheckingUpdate}
+                  className="py-2 px-3.5 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto active:scale-95"
+                >
+                  <RefreshCw size={13} className={isCheckingUpdate ? 'animate-spin' : ''} />
+                  {isCheckingUpdate ? 'Checking Server...' : 'Check for Updates'}
+                </button>
               </div>
 
-              <p className="text-xs leading-relaxed">
-                Krasola is a high-performance workspace created to simplify the developer-designer toolkit. By combining dynamic color palette generation with real-time vector pattern studio controls and lucide icon searches, users can speed up prototyping and visual development. All tools operate entirely on the client-side within browser Sandboxes.
+              <p className="text-xs leading-relaxed text-slate-300">
+                Krasola is a high-performance design workspace uniting Palette Lab, Pattern Studio, Image Search Hub, Cloud Vault, and In-App Notifications with real-time browser sandbox execution.
               </p>
+
+              <hr className={theme.border} />
+
+              {/* Version & Build Diagnostics Grid */}
+              <div className="space-y-2.5">
+                <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">System & Build Diagnostics</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Semantic Version</span>
+                    <span className="font-mono font-bold text-indigo-400">v{APP_VERSION}</span>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Git Commit</span>
+                    <span className="font-mono font-bold text-sky-400">{COMMIT_HASH}</span>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Built On</span>
+                    <span className="font-medium text-slate-300 truncate block">{getFormattedBuildDate()}</span>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border ${theme.isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">PWA Engine</span>
+                    <span className="font-medium text-emerald-400">Active (sw.js)</span>
+                  </div>
+                </div>
+              </div>
 
               <hr className={theme.border} />
 
               <div className="space-y-2">
                 <h5 className="text-xs font-bold uppercase tracking-wider opacity-60">Engine & Stack</h5>
-                <ul className="grid grid-cols-2 gap-2 text-xs font-semibold">
+                <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-semibold">
                   <li className="flex items-center gap-1.5">⚛️ React 18</li>
-                  <li className="flex items-center gap-1.5">⚡ Vite Bundler</li>
+                  <li className="flex items-center gap-1.5">⚡ Vite 6 Bundler</li>
                   <li className="flex items-center gap-1.5">🎨 Tailwind CSS</li>
-                  <li className="flex items-center gap-1.5">🛡️ LocalStorage Client</li>
+                  <li className="flex items-center gap-1.5">☁️ Supabase Cloud</li>
                 </ul>
               </div>
             </div>

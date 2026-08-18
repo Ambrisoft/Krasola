@@ -19,6 +19,7 @@ import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, delet
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 import { recordUserActivity } from './utils/telemetryTracker';
 import { usePwaInstall } from './utils/pwaManager';
+import { APP_VERSION, COMMIT_HASH } from './utils/versionManager';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -818,8 +819,12 @@ export default function App() {
                 <Settings size={14} />
               </button>
             </div>
-            <span className="text-[10px] text-slate-500 font-bold">
-              {isCollapsed ? 'v1.0' : 'Krasola v1.0.0'}
+            <span 
+              onClick={() => setActiveTab('settings')}
+              title={`Version ${APP_VERSION} (Commit: ${COMMIT_HASH}) - Click to view in Settings`}
+              className="text-[10px] text-slate-500 hover:text-indigo-400 font-bold cursor-pointer transition-colors"
+            >
+              {isCollapsed ? `v${APP_VERSION}` : `Krasola v${APP_VERSION}`}
             </span>
           </div>
         </div>
