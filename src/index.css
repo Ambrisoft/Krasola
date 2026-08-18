@@ -2,22 +2,173 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   KRASOLA UNIFIED DESIGN TOKEN ARCHITECTURE (CSS CUSTOM PROPERTIES)
+   ========================================================================== */
+
+:root,
+[data-theme="slate-dark"] {
+  --bg-app: #020617;
+  --bg-sidebar: #0f172a;
+  --bg-surface: rgba(15, 23, 42, 0.7);
+  --bg-card: #1e293b;
+  --border-subtle: #1e293b;
+  --border-focus: #6366f1;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-accent-text: #818cf8;
+  --glow-color: rgba(99, 102, 241, 0.12);
+  --scrollbar-track: #020617;
+  --scrollbar-thumb: #1e293b;
+  --scrollbar-thumb-hover: #334155;
+}
+
+[data-theme="slate-light"] {
+  --bg-app: #f8fafc;
+  --bg-sidebar: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.85);
+  --bg-card: #ffffff;
+  --border-subtle: #e2e8f0;
+  --border-focus: #6366f1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-accent-text: #4f46e5;
+  --glow-color: rgba(99, 102, 241, 0.06);
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+[data-theme="nord"] {
+  --bg-app: #2e3440;
+  --bg-sidebar: #3b4252;
+  --bg-surface: rgba(59, 66, 82, 0.7);
+  --bg-card: #434c5e;
+  --border-subtle: #4c566a;
+  --border-focus: #88c0d0;
+  --text-main: #eceff4;
+  --text-muted: #d8dee9;
+  --color-accent: #88c0d0;
+  --color-accent-hover: #8fbcbb;
+  --color-accent-text: #88c0d0;
+  --glow-color: rgba(136, 192, 208, 0.15);
+  --scrollbar-track: #2e3440;
+  --scrollbar-thumb: #434c5e;
+  --scrollbar-thumb-hover: #4c566a;
+}
+
+[data-theme="dracula"] {
+  --bg-app: #282a36;
+  --bg-sidebar: #1e1f29;
+  --bg-surface: rgba(30, 31, 41, 0.7);
+  --bg-card: #44475a;
+  --border-subtle: #6272a4;
+  --border-focus: #bd93f9;
+  --text-main: #f8f8f2;
+  --text-muted: #a4b1cd;
+  --color-accent: #bd93f9;
+  --color-accent-hover: #ff79c6;
+  --color-accent-text: #bd93f9;
+  --glow-color: rgba(189, 147, 249, 0.15);
+  --scrollbar-track: #1e1f29;
+  --scrollbar-thumb: #44475a;
+  --scrollbar-thumb-hover: #6272a4;
+}
+
+[data-theme="gruvbox"] {
+  --bg-app: #282828;
+  --bg-sidebar: #3c3836;
+  --bg-surface: rgba(60, 56, 54, 0.7);
+  --bg-card: #504945;
+  --border-subtle: #665c54;
+  --border-focus: #d79921;
+  --text-main: #ebdbb2;
+  --text-muted: #bdae93;
+  --color-accent: #d79921;
+  --color-accent-hover: #b8bb26;
+  --color-accent-text: #fabd2f;
+  --glow-color: rgba(215, 153, 33, 0.15);
+  --scrollbar-track: #282828;
+  --scrollbar-thumb: #504945;
+  --scrollbar-thumb-hover: #665c54;
+}
+
+[data-theme="solarized-light"] {
+  --bg-app: #fdf6e3;
+  --bg-sidebar: #eee8d5;
+  --bg-surface: rgba(238, 232, 213, 0.85);
+  --bg-card: #f5efdc;
+  --border-subtle: #cbd5e1;
+  --border-focus: #268bd2;
+  --text-main: #073642;
+  --text-muted: #657b83;
+  --color-accent: #268bd2;
+  --color-accent-hover: #2aa198;
+  --color-accent-text: #268bd2;
+  --glow-color: rgba(38, 139, 210, 0.08);
+  --scrollbar-track: #eee8d5;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+[data-theme="cyberpunk"] {
+  --bg-app: #0d0221;
+  --bg-sidebar: #0f082c;
+  --bg-surface: rgba(15, 8, 44, 0.75);
+  --bg-card: #1e0f40;
+  --border-subtle: #3a1c6a;
+  --border-focus: #ff79c6;
+  --text-main: #a5ffd6;
+  --text-muted: #00e5ff;
+  --color-accent: #ff79c6;
+  --color-accent-hover: #bd93f9;
+  --color-accent-text: #ff79c6;
+  --glow-color: rgba(255, 121, 198, 0.18);
+  --scrollbar-track: #0d0221;
+  --scrollbar-thumb: #3a1c6a;
+  --scrollbar-thumb-hover: #ff79c6;
+}
+
 @layer base {
   body {
     @apply font-sans;
+    background-color: var(--bg-app);
+    color: var(--text-main);
   }
 }
 
-/* Custom scrollbars for clean dashboards */
+/* ==========================================================================
+   DYNAMIC THEME-AWARE SCROLLBARS
+   ========================================================================== */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-950;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded-full hover:bg-slate-700;
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Modal and Command Palette animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

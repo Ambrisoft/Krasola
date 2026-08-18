@@ -249,7 +249,7 @@ export default function SettingsComponent({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold tracking-tight">Theme & Appearance</h3>
-              <p className={`text-xs ${theme.textMuted}`}>Choose from built-in theme presets to matching your creative workspace vibe.</p>
+              <p className={`text-xs ${theme.textMuted}`}>Choose from built-in theme presets with WCAG AA compliance and dynamic CSS variables.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -259,36 +259,59 @@ export default function SettingsComponent({
                   <button
                     key={themeObj.id}
                     onClick={() => setActiveThemeId(themeObj.id)}
-                    className={`text-left rounded-2xl border p-4 flex items-center justify-between gap-4 transition-all duration-300 relative group overflow-hidden ${
+                    className={`text-left rounded-2xl border p-4 flex flex-col justify-between gap-3 transition-all duration-300 relative group overflow-hidden ${
                       isSelected 
-                        ? 'border-indigo-500 ring-2 ring-indigo-500/20' 
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md' 
                         : theme.isDark 
-                          ? 'border-slate-800 hover:border-slate-700 bg-slate-900/30' 
-                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/20'
+                          ? 'border-slate-800 hover:border-slate-700 bg-slate-900/30 hover:bg-slate-900/60' 
+                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/40 hover:bg-white'
                     }`}
                   >
-                    <div className="space-y-2">
+                    <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold">{themeObj.name}</span>
                         {themeObj.isDark ? (
-                          <Moon size={11} className="text-blue-400" />
+                          <Moon size={12} className="text-blue-400" />
                         ) : (
-                          <Sun size={11} className="text-amber-400" />
+                          <Sun size={12} className="text-amber-400" />
                         )}
                       </div>
-                      <div className="flex gap-1.5">
-                        <span className="w-4 h-4 rounded bg-slate-950 border border-white/10" title="BG Dark" />
-                        <span className="w-4 h-4 rounded bg-indigo-600" title="Accent Color" />
-                        <span className="w-4 h-4 rounded bg-slate-800" title="Sidebar Element" />
+
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
+                        isSelected 
+                          ? 'bg-indigo-600 border-indigo-600 text-white' 
+                          : 'border-slate-400/40 text-transparent'
+                      }`}>
+                        <Check size={10} strokeWidth={3} />
                       </div>
                     </div>
 
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
-                      isSelected 
-                        ? 'bg-indigo-600 border-indigo-600 text-white' 
-                        : 'border-slate-400/40 text-transparent'
-                    }`}>
-                      <Check size={10} strokeWidth={3} />
+                    <p className={`text-[11px] ${theme.textMuted} leading-relaxed line-clamp-2`}>
+                      {themeObj.description}
+                    </p>
+
+                    <div className="pt-2 border-t dark:border-slate-800/60 border-slate-200/60 flex items-center justify-between w-full">
+                      <div className="flex gap-1.5 items-center">
+                        <span 
+                          className="w-4 h-4 rounded-md border border-black/15 shadow-inner" 
+                          style={{ backgroundColor: themeObj.bgHex }}
+                          title={`Canvas: ${themeObj.bgHex}`} 
+                        />
+                        <span 
+                          className="w-4 h-4 rounded-md border border-black/15 shadow-inner" 
+                          style={{ backgroundColor: themeObj.sidebarHex }}
+                          title={`Sidebar: ${themeObj.sidebarHex}`} 
+                        />
+                        <span 
+                          className="w-4 h-4 rounded-md border border-black/15 shadow-inner" 
+                          style={{ backgroundColor: themeObj.accentHex }}
+                          title={`Accent: ${themeObj.accentHex}`} 
+                        />
+                      </div>
+
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-500/10 text-slate-400">
+                        {themeObj.contrastRatio}
+                      </span>
                     </div>
                   </button>
                 );

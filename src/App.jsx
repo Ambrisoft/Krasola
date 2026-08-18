@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell, BookOpen, Sun, Moon } from 'lucide-react';
+import { Palette, Layers, Heart, FolderHeart, Laptop, ExternalLink, Settings, Home as HomeIcon, Keyboard, Info, Check, Copy, Image as ImageIcon, User, Activity, Download, Menu, X, Sparkles, Smartphone, ChevronRight, Bell, BookOpen, Sun, Moon, Search, Command as CommandIcon } from 'lucide-react';
 import { THEMES } from './utils/themeUtils';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
@@ -15,6 +15,8 @@ import Account from './components/Account';
 import Monitoring from './components/Monitoring';
 import Documentation from './components/Documentation';
 import PwaInstallModal from './components/pwa/PwaInstallModal';
+import ThemePanelModal from './components/theme/ThemePanelModal';
+import CommandPalette from './components/navigation/CommandPalette';
 import { NotificationCenterDrawer } from './components/notification/NotificationCenterDrawer';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
@@ -31,7 +33,21 @@ export default function App() {
   const [copiedHex, setCopiedHex] = useState(null);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const { canInstall, isInstalled } = usePwaInstall();
+
+  // Global Ctrl+K / Cmd+K listener for Command Palette
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     sessionStorage.setItem('current_active_tab', activeTab);
@@ -876,9 +892,9 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Quick 1-Tap Theme Toggle */}
+            {/* Quick 1-Tap Theme Toggle (Fixed ID Mapping) */}
             <button
-              onClick={() => setActiveThemeId(theme.isDark ? 'snowy-light' : 'midnight-dark')}
+              onClick={() => setActiveThemeId(theme.isDark ? 'slate-light' : 'slate-dark')}
               className={`p-2 rounded-xl border transition-all active:scale-90 ${
                 theme.isDark ? 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
@@ -928,16 +944,34 @@ export default function App() {
         <header className={`hidden md:flex h-16 border-b px-6 items-center justify-between shrink-0 transition-colors duration-300 ${
           theme.isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
         }`}>
-          {/* Left: Active view breadcrumb */}
-          <div className="flex items-center gap-2 text-xs font-semibold">
-            <span className={theme.textMuted}>Krasola</span>
-            <span className={theme.textMuted}>/</span>
-            <span className="text-sm font-bold tracking-tight">{tabTitles[activeTab]}</span>
+          {/* Left: Active view breadcrumb & Quick Command Search */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs font-semibold">
+              <span className={theme.textMuted}>Krasola</span>
+              <span className={theme.textMuted}>/</span>
+              <span className="text-sm font-bold tracking-tight">{tabTitles[activeTab]}</span>
+            </div>
+
+            <button
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+                theme.isDark 
+                  ? 'bg-slate-800/60 border-slate-700/80 hover:bg-slate-800 text-slate-300' 
+                  : 'bg-slate-100/80 border-slate-200 hover:bg-slate-200/80 text-slate-600'
+              }`}
+              title="Open Command Hub (Ctrl+K)"
+            >
+              <Search size={13} className="text-indigo-400" />
+              <span>Search commands...</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-black/20 font-mono text-[9px] font-bold border border-slate-700 text-slate-400">
+                ⌘K
+              </kbd>
+            </button>
           </div>
 
           {/* Center: Global active palette preview strip */}
           {activePalette.length > 0 && (
-            <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.textMuted} flex items-center gap-1`}>
                 Active Palette:
               </span>
@@ -963,7 +997,7 @@ export default function App() {
             </div>
           )}
 
-          {/* Right: Install button + Theme dropdown selector */}
+          {/* Right: Install button + Theme Studio Pill + Notifications */}
           <div className="flex items-center gap-3">
             {!isInstalled && (
               <button
@@ -975,9 +1009,9 @@ export default function App() {
               </button>
             )}
 
-            {/* Quick Keyboard shortcut helpers */}
+            {/* Quick Keyboard shortcut helper for Palette tab */}
             {activeTab === 'palette' && (
-              <div className={`hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-semibold ${
+              <div className={`hidden xl:flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-semibold ${
                 theme.isDark ? 'bg-slate-800/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'
               }`}>
                 <Keyboard size={13} className="text-indigo-400" />
@@ -1003,38 +1037,23 @@ export default function App() {
               )}
             </button>
 
-            {/* Global Theme selector */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setActiveTab('settings');
-                  setIsCollapsed(true);
-                }}
-                className={`p-1.5 rounded-xl border transition-all ${
-                  theme.isDark 
-                    ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-300' 
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-250 text-slate-750'
-                }`}
-                title="Settings"
-              >
-                <Settings size={14} />
-              </button>
-              <select
-                value={activeThemeId}
-                onChange={(e) => setActiveThemeId(e.target.value)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-xl border focus:outline-none transition-all cursor-pointer ${
-                  theme.isDark 
-                    ? 'bg-slate-800/90 border-slate-700 text-slate-200' 
-                    : 'bg-slate-50 border-slate-200 text-slate-700'
-                }`}
-              >
-                {THEMES.map((themeObj) => (
-                  <option key={themeObj.id} value={themeObj.id}>
-                    {themeObj.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Interactive Theme Studio Popover Trigger */}
+            <button
+              onClick={() => setIsThemeModalOpen(true)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                theme.isDark 
+                  ? 'bg-slate-800/90 border-slate-700 hover:bg-slate-700 text-slate-200 shadow-sm' 
+                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700 shadow-sm'
+              }`}
+              title="Open Theme Studio Panel"
+            >
+              <span 
+                className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
+                style={{ backgroundColor: theme.accentHex || '#6366f1' }}
+              />
+              <span className="truncate max-w-[110px]">{theme.name}</span>
+              <Palette size={13} className="text-indigo-400" />
+            </button>
           </div>
         </header>
 
@@ -1335,12 +1354,38 @@ export default function App() {
               </div>
             </div>
 
-            {/* Section 3: Knowledge & Settings */}
+            {/* Section 3: Knowledge, Theme & Settings */}
             <div className="space-y-2">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 block px-1">
-                Guides & Settings
+                Workspace & Systems
               </span>
               <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setIsThemeModalOpen(true); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <Palette size={18} className="text-indigo-400 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Theme Studio</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>{theme.name}</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => { setIsCommandPaletteOpen(true); setIsMobileMenuOpen(false); }}
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
+                    theme.isDark ? 'border-slate-800 bg-slate-850 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
+                  <Search size={18} className="text-sky-400 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-xs font-bold block truncate">Command Hub</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>⌘K Instant Search</span>
+                  </div>
+                </button>
+
                 <button
                   onClick={() => { setActiveTab('docs'); setIsMobileMenuOpen(false); }}
                   className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 ${
@@ -1367,7 +1412,7 @@ export default function App() {
                   <Settings size={18} className="text-slate-400 shrink-0" />
                   <div className="truncate">
                     <span className="text-xs font-bold block truncate">Settings</span>
-                    <span className={`text-[9px] ${theme.textMuted}`}>Theme & Options</span>
+                    <span className={`text-[9px] ${theme.textMuted}`}>Preferences & Glow</span>
                   </div>
                 </button>
               </div>
@@ -1407,6 +1452,22 @@ export default function App() {
       <NotificationCenterDrawer 
         theme={theme} 
         onNavigateTab={setActiveTab} 
+      />
+
+      {/* Interactive Theme Studio Modal */}
+      <ThemePanelModal 
+        isOpen={isThemeModalOpen} 
+        onClose={() => setIsThemeModalOpen(false)} 
+      />
+
+      {/* Universal Command Palette Hub */}
+      <CommandPalette 
+        isOpen={isCommandPaletteOpen} 
+        onClose={() => setIsCommandPaletteOpen(false)} 
+        onNavigateTab={setActiveTab}
+        onOpenThemeStudio={() => setIsThemeModalOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
+        onOpenNotifications={toggleDrawer}
       />
     </div>
   );

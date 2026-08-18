@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-08-18
+
+### Added
+- Universal `Ctrl + K` / `Cmd + K` Command Palette modal with instant fuzzy search across all 10 creative studios, all 7 themes, and quick actions.
+- Interactive Theme Studio modal with category filters (*All*, *Dark*, *Light*), real-time color swatches, active indicator rings, and WCAG AA/AAA contrast tags.
+- CSS Custom Properties Design Token system (`--bg-app`, `--bg-surface`, `--color-accent`, etc.) supporting all 7 themes (*Midnight Dark*, *Snowy Light*, *Nordic Frost*, *Dracula Castle*, *Gruvbox Retro*, *Solarized Warm*, *Cyberpunk Neon*).
+- Streamlined desktop header with Command Palette trigger and Theme Studio pill.
+
+### Fixed
+- Fixed mobile Sun/Moon quick toggle (`BUG-01`) to map to valid theme IDs (`slate-light` and `slate-dark`).
+- Fixed Settings Appearance preview cards (`BUG-02`) to render authentic theme colors instead of hardcoded slate/indigo swatches.
+- Fixed global scrollbars (`BUG-03`) to dynamically adapt to dark and light modes via CSS variables.
+
+---
+
 ## [1.2.3] - 2026-08-18 (Commit `578ae20`)
 
 ### Fixed

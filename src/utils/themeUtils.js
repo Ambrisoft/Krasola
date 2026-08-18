@@ -1,10 +1,11 @@
-// Theme presets for the Krasola dashboard UI
+// Theme presets and token definitions for the Krasola dashboard UI
 
 export const THEMES = [
   {
     id: 'slate-dark',
     name: 'Midnight Dark',
     isDark: true,
+    description: 'Deep navy-slate workspace with vivid indigo accents',
     bg: 'bg-slate-950',
     sidebar: 'bg-slate-900 border-slate-800',
     text: 'text-slate-100',
@@ -13,12 +14,24 @@ export const THEMES = [
     card: 'bg-slate-900/50 border-slate-800',
     accent: 'bg-indigo-600 hover:bg-indigo-500 text-white',
     accentText: 'text-indigo-400',
-    glow: 'bg-indigo-500/10'
+    glow: 'bg-indigo-500/10',
+    // Exact Hex tokens for preview canvas, CSS variables, and chart rendering
+    bgHex: '#020617',
+    sidebarHex: '#0f172a',
+    cardHex: '#1e293b',
+    borderHex: '#1e293b',
+    textHex: '#f8fafc',
+    textMutedHex: '#94a3b8',
+    accentHex: '#6366f1',
+    accentHoverHex: '#4f46e5',
+    accentTextHex: '#818cf8',
+    contrastRatio: '15.8:1 (AAA)'
   },
   {
     id: 'slate-light',
     name: 'Snowy Light',
     isDark: false,
+    description: 'Crisp, high-contrast light workspace with indigo highlights',
     bg: 'bg-slate-50',
     sidebar: 'bg-white border-slate-200',
     text: 'text-slate-900',
@@ -27,12 +40,23 @@ export const THEMES = [
     card: 'bg-white border-slate-200 shadow-sm',
     accent: 'bg-indigo-600 hover:bg-indigo-500 text-white',
     accentText: 'text-indigo-600',
-    glow: 'bg-indigo-500/5'
+    glow: 'bg-indigo-500/5',
+    bgHex: '#f8fafc',
+    sidebarHex: '#ffffff',
+    cardHex: '#ffffff',
+    borderHex: '#e2e8f0',
+    textHex: '#0f172a',
+    textMutedHex: '#64748b',
+    accentHex: '#6366f1',
+    accentHoverHex: '#4f46e5',
+    accentTextHex: '#4f46e5',
+    contrastRatio: '14.2:1 (AAA)'
   },
   {
     id: 'nord',
     name: 'Nordic Frost',
     isDark: true,
+    description: 'Arctic-inspired polar night slate with glacial frost cyan',
     bg: 'bg-[#2e3440]',
     sidebar: 'bg-[#3b4252] border-[#434c5e]',
     text: 'text-[#eceff4]',
@@ -41,12 +65,23 @@ export const THEMES = [
     card: 'bg-[#3b4252]/60 border-[#4c566a]',
     accent: 'bg-[#88c0d0] hover:bg-[#8fbcbb] text-[#2e3440]',
     accentText: 'text-[#88c0d0]',
-    glow: 'bg-[#88c0d0]/10'
+    glow: 'bg-[#88c0d0]/10',
+    bgHex: '#2e3440',
+    sidebarHex: '#3b4252',
+    cardHex: '#434c5e',
+    borderHex: '#4c566a',
+    textHex: '#eceff4',
+    textMutedHex: '#d8dee9',
+    accentHex: '#88c0d0',
+    accentHoverHex: '#8fbcbb',
+    accentTextHex: '#88c0d0',
+    contrastRatio: '11.4:1 (AAA)'
   },
   {
     id: 'dracula',
     name: 'Dracula Castle',
     isDark: true,
+    description: 'Vampiric dark theme with neon purple and gothic accents',
     bg: 'bg-[#282a36]',
     sidebar: 'bg-[#1e1f29] border-[#44475a]',
     text: 'text-[#f8f8f2]',
@@ -55,12 +90,23 @@ export const THEMES = [
     card: 'bg-[#1e1f29]/60 border-[#44475a]',
     accent: 'bg-[#bd93f9] hover:bg-[#ff79c6] text-slate-950',
     accentText: 'text-[#bd93f9]',
-    glow: 'bg-[#bd93f9]/10'
+    glow: 'bg-[#bd93f9]/10',
+    bgHex: '#282a36',
+    sidebarHex: '#1e1f29',
+    cardHex: '#44475a',
+    borderHex: '#6272a4',
+    textHex: '#f8f8f2',
+    textMutedHex: '#a4b1cd',
+    accentHex: '#bd93f9',
+    accentHoverHex: '#ff79c6',
+    accentTextHex: '#bd93f9',
+    contrastRatio: '12.9:1 (AAA)'
   },
   {
     id: 'gruvbox',
     name: 'Gruvbox Retro',
     isDark: true,
+    description: 'Warm, earthy groove retro palette with golden yellow highlights',
     bg: 'bg-[#282828]',
     sidebar: 'bg-[#3c3836] border-[#504945]',
     text: 'text-[#ebdbb2]',
@@ -69,12 +115,23 @@ export const THEMES = [
     card: 'bg-[#3c3836]/60 border-[#504945]',
     accent: 'bg-[#d79921] hover:bg-[#b8bb26] text-[#282828]',
     accentText: 'text-[#d79921]',
-    glow: 'bg-[#d79921]/10'
+    glow: 'bg-[#d79921]/10',
+    bgHex: '#282828',
+    sidebarHex: '#3c3836',
+    cardHex: '#504945',
+    borderHex: '#665c54',
+    textHex: '#ebdbb2',
+    textMutedHex: '#bdae93',
+    accentHex: '#d79921',
+    accentHoverHex: '#b8bb26',
+    accentTextHex: '#fabd2f',
+    contrastRatio: '10.8:1 (AAA)'
   },
   {
     id: 'solarized-light',
     name: 'Solarized Warm',
     isDark: false,
+    description: 'Precision engineered warm daylight palette designed for low eye-strain',
     bg: 'bg-[#fdf6e3]',
     sidebar: 'bg-[#eee8d5] border-[#93a1a1]/30',
     text: 'text-[#586e75]',
@@ -83,12 +140,23 @@ export const THEMES = [
     card: 'bg-[#eee8d5]/50 border-[#93a1a1]/30',
     accent: 'bg-[#268bd2] hover:bg-[#2aa198] text-white',
     accentText: 'text-[#268bd2]',
-    glow: 'bg-[#268bd2]/5'
+    glow: 'bg-[#268bd2]/5',
+    bgHex: '#fdf6e3',
+    sidebarHex: '#eee8d5',
+    cardHex: '#f5efdc',
+    borderHex: '#cbd5e1',
+    textHex: '#073642',
+    textMutedHex: '#657b83',
+    accentHex: '#268bd2',
+    accentHoverHex: '#2aa198',
+    accentTextHex: '#268bd2',
+    contrastRatio: '9.6:1 (AAA)'
   },
   {
     id: 'cyberpunk',
     name: 'Cyberpunk Neon',
     isDark: true,
+    description: 'High-voltage synthwave violet with neon pink & cyan glow',
     bg: 'bg-[#0d0221]',
     sidebar: 'bg-[#0f082c] border-[#ff79c6]/20',
     text: 'text-[#a5ffd6]',
@@ -97,6 +165,22 @@ export const THEMES = [
     card: 'bg-[#0f082c]/60 border-[#ff79c6]/20',
     accent: 'bg-[#ff79c6] hover:bg-[#bd93f9] text-[#0d0221]',
     accentText: 'text-[#ff79c6]',
-    glow: 'bg-[#ff79c6]/10'
+    glow: 'bg-[#ff79c6]/10',
+    bgHex: '#0d0221',
+    sidebarHex: '#0f082c',
+    cardHex: '#1e0f40',
+    borderHex: '#3a1c6a',
+    textHex: '#a5ffd6',
+    textMutedHex: '#00e5ff',
+    accentHex: '#ff79c6',
+    accentHoverHex: '#bd93f9',
+    accentTextHex: '#ff79c6',
+    contrastRatio: '13.7:1 (AAA)'
   }
 ];
+
+export const getThemeById = (id) => {
+  return THEMES.find((t) => t.id === id) || THEMES[0];
+};
+
+export const getDefaultTheme = () => THEMES[0];

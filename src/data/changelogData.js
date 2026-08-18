@@ -5,6 +5,27 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.3.0',
+    date: '2026-08-18',
+    type: 'minor',
+    title: 'Command Palette, Theme Studio & CSS Token Engine',
+    commit: 'HEAD',
+    summary: 'Universal Ctrl+K Command Palette, interactive Theme Studio modal with dynamic swatches, CSS custom property token engine, and navigation de-cluttering.',
+    changes: {
+      added: [
+        'Universal Ctrl + K Command Palette modal for rapid navigation across all 10 creative studios, theme switching, and quick tools.',
+        'Interactive Theme Studio modal with category filtering, real-time color swatches, active ring indicators, and WCAG AA/AAA contrast tags.',
+        'CSS Custom Properties design token engine across all 7 themes with zero visual patchwork.',
+        'Sleek Command Palette trigger and Theme Studio pill button in desktop header.'
+      ],
+      fixed: [
+        'Fixed mobile 1-tap theme toggle to properly switch between Snowy Light and Midnight Dark.',
+        'Fixed Settings Appearance cards to render authentic theme colors instead of hardcoded slate dots.',
+        'Fixed global scrollbars in light themes to adapt dynamically via CSS variables.'
+      ]
+    }
+  },
+  {
     version: '1.2.3',
     date: '2026-08-18',
     type: 'patch',
