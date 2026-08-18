@@ -29,8 +29,8 @@ export const DOCS_CATEGORIES = [
     id: 'platform-systems',
     title: 'Platform Architecture',
     icon: 'Cpu',
-    description: 'In-App Notification Center ring buffer, SemVer 2.0, and keyboard shortcuts.',
-    items: ['notifications-engine', 'version-control', 'keyboard-shortcuts']
+    description: 'In-App Notification Center ring buffer, SemVer 2.0, release history, and shortcuts.',
+    items: ['notifications-engine', 'version-control', 'release-history', 'keyboard-shortcuts']
   }
 ];
 
@@ -556,6 +556,39 @@ EXECUTE FUNCTION public.prune_user_notifications_ring_buffer();`
           ['MINOR (1.Y.0)', '1.0.0 ➔ 1.1.0', 'New backward-compatible features (e.g. Notification Center).'],
           ['PATCH (1.1.Z)', '1.1.0 ➔ 1.1.1', 'Bug fixes, styling alignments, telemetry resilience.']
         ]
+      }
+    ]
+  },
+
+  'release-history': {
+    id: 'release-history',
+    categoryId: 'platform-systems',
+    title: 'Platform Changelog & Release Lineage',
+    subtitle: '100% genuine chronological record of all production releases and feature additions.',
+    readTime: '4 min read',
+    tags: ['Changelog', 'Releases', 'History', 'Lineage'],
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Krasola maintains a strict, transparent release history conforming to SemVer 2.0 and Keep a Changelog specifications. Below is the historical catalog of all versions.'
+      },
+      {
+        type: 'table',
+        headers: ['Version', 'Type', 'Date', 'Key Deliverables'],
+        rows: [
+          ['v1.2.3', 'Patch', '2026-08-18', 'Fixed runtime Sun/Moon icon imports in App.jsx for mobile theme toggle.'],
+          ['v1.2.2', 'Patch', '2026-08-18', 'Mobile-first navigation overhaul, 48px touch targets, bottom sheets, sub-tab carousels.'],
+          ['v1.2.1', 'Patch', '2026-08-18', 'Automated release engine (scripts/auto-version.js) & light theme contrast polish.'],
+          ['v1.2.0', 'Minor', '2026-08-18', 'Diátaxis Documentation Studio, Secrets Redaction, Ctrl+K search modal.'],
+          ['v1.1.0', 'Minor', '2026-08-17', 'In-App Notification Center, 50-item PG ring buffer, SemVer diagnostics, HTML email suite.'],
+          ['v1.0.0', 'Major', '2026-08-14', 'Initial production release: Palette Lab, Pattern Studio (1,024 presets), Icon Finder, Cloud Vault, PWA.']
+        ]
+      },
+      {
+        type: 'callout',
+        variant: 'tip',
+        title: 'Interactive Release Explorer',
+        text: 'You can also browse, filter, search, and copy commit SHAs interactively by navigating to Settings Studio ➔ System Diagnostics ➔ "View Changelog & Releases".'
       }
     ]
   },

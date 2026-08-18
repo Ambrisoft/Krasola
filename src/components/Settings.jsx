@@ -13,12 +13,14 @@ import {
   Sparkles,
   Keyboard,
   RefreshCw,
-  Home
+  Home,
+  History
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { THEMES } from '../utils/themeUtils';
 import { APP_VERSION, COMMIT_HASH, APP_STAGE, getFormattedBuildDate, checkForAppUpdates } from '../utils/versionManager';
+import ChangelogModal from './version/ChangelogModal';
 
 export default function SettingsComponent({ 
   savedPalettes, 
@@ -40,6 +42,7 @@ export default function SettingsComponent({
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState('general');
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleCheckUpdate = async () => {
@@ -405,14 +408,23 @@ export default function SettingsComponent({
                   </div>
                 </div>
 
-                <button
-                  onClick={handleCheckUpdate}
-                  disabled={isCheckingUpdate}
-                  className="py-2 px-3.5 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto active:scale-95"
-                >
-                  <RefreshCw size={13} className={isCheckingUpdate ? 'animate-spin' : ''} />
-                  {isCheckingUpdate ? 'Checking Server...' : 'Check for Updates'}
-                </button>
+                <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => setIsChangelogOpen(true)}
+                    className="py-2 px-3.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all active:scale-95"
+                  >
+                    <History size={13} /> View Changelog & Releases
+                  </button>
+
+                  <button
+                    onClick={handleCheckUpdate}
+                    disabled={isCheckingUpdate}
+                    className="py-2 px-3.5 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all active:scale-95"
+                  >
+                    <RefreshCw size={13} className={isCheckingUpdate ? 'animate-spin' : ''} />
+                    {isCheckingUpdate ? 'Checking Server...' : 'Check Updates'}
+                  </button>
+                </div>
               </div>
 
               <p className={`text-xs leading-relaxed ${theme.isDark ? 'text-slate-300' : 'text-slate-700 font-medium'}`}>
@@ -462,6 +474,13 @@ export default function SettingsComponent({
           </div>
         )}
       </main>
+
+      {/* Release History & Changelog Modal */}
+      <ChangelogModal
+        isOpen={isChangelogOpen}
+        onClose={() => setIsChangelogOpen(false)}
+        theme={theme}
+      />
     </div>
   );
 }
