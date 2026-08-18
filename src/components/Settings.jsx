@@ -443,8 +443,10 @@ export default function SettingsComponent({
             <div className={`border rounded-2xl p-6 space-y-6 ${theme.card}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-extrabold text-3xl shrink-0">
-                    K
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-sky-400 p-0.5 shadow-xl shadow-indigo-500/25 flex items-center justify-center shrink-0">
+                    <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center font-black text-white text-3xl">
+                      K
+                    </div>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">

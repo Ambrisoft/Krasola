@@ -680,8 +680,10 @@ export default function App() {
           {/* Logo / Header with Collapse Button */}
           <div className={`flex items-center justify-between w-full ${isCollapsed ? 'flex-col gap-4' : ''}`}>
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-extrabold text-lg shrink-0">
-                K
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-indigo-500/25 flex items-center justify-center shrink-0">
+                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center font-black text-white text-lg">
+                  K
+                </div>
               </div>
               {!isCollapsed && (
                 <div className="transition-opacity duration-300">
@@ -935,8 +937,10 @@ export default function App() {
             onClick={() => setIsMobileMenuOpen(true)}
             className="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-black text-base shrink-0">
-              K
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 p-0.5 shadow-md shadow-indigo-500/20 flex items-center justify-center shrink-0">
+              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-black text-white text-xs">
+                K
+              </div>
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
