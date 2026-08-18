@@ -3,7 +3,7 @@
 // Enables standalone app execution, offline caching, and instant launch times.
 // ==============================================================================
 
-const CACHE_NAME = 'krasola-pwa-v1.3.1';
+const CACHE_NAME = 'krasola-pwa-v1.3.2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -36,6 +36,13 @@ self.addEventListener('activate', (event) => {
       );
     }).then(() => self.clients.claim())
   );
+});
+
+// Message Event - Handle skipWaiting messages from client
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch Event - Network first with cache fallback for dynamic resources, Cache first for fonts/icons

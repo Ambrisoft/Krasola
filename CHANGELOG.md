@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.2] - 2026-08-18
+
+### Added
+- Real-time automated background update detection engine with on-mount checking, window tab focus listener, and 15-minute heartbeat polling.
+- In-App Notification Center update alerts dispatching system-level release announcements when new builds are deployed.
+- Floating `UpdateNotificationBanner` component with 1-click cache purge and seamless reload.
+- `applyAppUpdate()` lifecycle function handling Service Worker `SKIP_WAITING` messages and instant client activation.
+
+---
+
 ## [1.3.1] - 2026-08-18
 
 ### Changed

@@ -5,6 +5,22 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.3.2',
+    date: '2026-08-18',
+    type: 'patch',
+    title: 'Automated Update Detection & Real-Time Notification Engine',
+    commit: 'HEAD',
+    summary: 'Automated background update checking on mount, tab focus, and 15-minute polling with In-App Notification integration and floating instant reload banner.',
+    changes: {
+      added: [
+        'Automated background update engine checking /version.json on app mount, window focus, and 15-minute intervals.',
+        'In-App Notification Center update alerts dispatching system announcements when new versions deploy.',
+        'Floating UpdateNotificationBanner component allowing single-click update and instant cache refresh.',
+        'applyAppUpdate utility dispatching SKIP_WAITING to Service Worker for zero-downtime updates.'
+      ]
+    }
+  },
+  {
     version: '1.3.1',
     date: '2026-08-18',
     type: 'patch',

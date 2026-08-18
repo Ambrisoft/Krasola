@@ -3,7 +3,7 @@
  * Centralized Single Source of Truth for SemVer, Commit Hashes, and PWA Updates
  */
 
-export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.3.1';
+export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.3.2';
 export const COMMIT_HASH = typeof __COMMIT_HASH__ !== 'undefined' ? __COMMIT_HASH__ : 'main';
 export const BUILD_TIMESTAMP = typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : new Date().toISOString();
 export const APP_STAGE = typeof __APP_STAGE__ !== 'undefined' ? __APP_STAGE__ : 'Production';
@@ -27,7 +27,7 @@ export const getFormattedBuildDate = () => {
 
 /**
  * Check if a newer version is deployed on the server
- * @returns {Promise<{ hasUpdate: boolean, latestVersion: string, currentVersion: string }>}
+ * @returns {Promise<{ hasUpdate: boolean, latestVersion: string, currentVersion: string, latestCommit: string, currentCommit: string }>}
  */
 export const checkForAppUpdates = async () => {
   try {
@@ -59,5 +59,37 @@ export const checkForAppUpdates = async () => {
   } catch (e) {
     console.warn('Update check failed:', e);
     return { hasUpdate: false, latestVersion: APP_VERSION, currentVersion: APP_VERSION };
+  }
+};
+
+/**
+ * Purge stale Service Worker caches and perform an instant seamless application reload
+ */
+export const applyAppUpdate = async () => {
+  try {
+    if (typeof window !== 'undefined') {
+      // 1. Unregister or skipWaiting on Service Workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+          await registration.update().catch(() => {});
+        }
+      }
+
+      // 2. Clear caches if accessible
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(k => caches.delete(k)));
+      }
+
+      // 3. Force reload ignoring cache
+      window.location.reload();
+    }
+  } catch (err) {
+    console.warn('Error applying app update:', err);
+    window.location.reload();
   }
 };

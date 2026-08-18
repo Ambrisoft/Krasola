@@ -17,12 +17,13 @@ import Documentation from './components/Documentation';
 import PwaInstallModal from './components/pwa/PwaInstallModal';
 import ThemePanelModal from './components/theme/ThemePanelModal';
 import CommandPalette from './components/navigation/CommandPalette';
+import { UpdateNotificationBanner } from './components/notification/UpdateNotificationBanner';
 import { NotificationCenterDrawer } from './components/notification/NotificationCenterDrawer';
 import { supabase, isSupabaseConfigured, uploadUserImage, fetchUserImages, deleteUserImage } from './utils/supabaseClient';
 import { getUniquePaletteName, getUniquePatternName } from './utils/namingUtils';
 import { recordUserActivity } from './utils/telemetryTracker';
 import { usePwaInstall } from './utils/pwaManager';
-import { APP_VERSION, COMMIT_HASH } from './utils/versionManager';
+import { APP_VERSION, COMMIT_HASH, checkForAppUpdates } from './utils/versionManager';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -35,6 +36,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [availableUpdate, setAvailableUpdate] = useState(null);
   const { canInstall, isInstalled } = usePwaInstall();
 
   // Global Ctrl+K / Cmd+K listener for Command Palette
@@ -82,7 +84,65 @@ export default function App() {
   // Consume global ThemeContext and ToastContext
   const { theme, activeThemeId, setActiveThemeId } = useTheme();
   const { toast, showToast } = useToast();
-  const { unreadCount, toggleDrawer } = useNotifications();
+  const { unreadCount, toggleDrawer, addNotification } = useNotifications();
+
+  // Automated background update detection (Mount, Focus, and 15-min Heartbeat)
+  useEffect(() => {
+    let isChecking = false;
+
+    const performBackgroundCheck = async () => {
+      if (isChecking) return;
+      isChecking = true;
+      try {
+        const update = await checkForAppUpdates();
+        if (update.hasUpdate) {
+          setAvailableUpdate(update);
+          
+          // Check if already notified this session
+          const lastNotifiedVersion = sessionStorage.getItem('notified_update_version');
+          if (lastNotifiedVersion !== update.latestVersion) {
+            sessionStorage.setItem('notified_update_version', update.latestVersion);
+            if (addNotification) {
+              addNotification({
+                title: `New Krasola Update (v${update.latestVersion})`,
+                message: `A new version of Krasola is available. Click 'Update Now' to apply the latest features and fixes.`,
+                type: 'system',
+                category: 'system',
+                actionTab: 'settings'
+              });
+            }
+          }
+        }
+      } catch (e) {
+        // Silently catch background network error
+      } finally {
+        isChecking = false;
+      }
+    };
+
+    // 1. Initial check after app mount
+    const initialTimer = setTimeout(performBackgroundCheck, 3000);
+
+    // 2. Check whenever user returns / refocuses tab
+    const handleFocus = () => {
+      performBackgroundCheck();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        performBackgroundCheck();
+      }
+    });
+
+    // 3. Periodic heartbeat check every 15 minutes (900,000 ms)
+    const interval = setInterval(performBackgroundCheck, 15 * 60 * 1000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [addNotification]);
 
   // User auth state tracker
   const [user, setUser] = useState(null);
@@ -1468,6 +1528,12 @@ export default function App() {
         onOpenThemeStudio={() => setIsThemeModalOpen(true)}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
         onOpenNotifications={toggleDrawer}
+      />
+
+      {/* Real-time Update Notification Floating Banner */}
+      <UpdateNotificationBanner 
+        updateInfo={availableUpdate}
+        onDismiss={() => setAvailableUpdate(null)}
       />
     </div>
   );
