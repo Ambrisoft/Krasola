@@ -3,7 +3,7 @@
  * Centralized Single Source of Truth for SemVer, Commit Hashes, and PWA Updates
  */
 
-export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.4.0';
+export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.4.1';
 export const COMMIT_HASH = typeof __COMMIT_HASH__ !== 'undefined' ? __COMMIT_HASH__ : 'main';
 export const BUILD_TIMESTAMP = typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : new Date().toISOString();
 export const APP_STAGE = typeof __APP_STAGE__ !== 'undefined' ? __APP_STAGE__ : 'Production';

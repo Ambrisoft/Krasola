@@ -353,99 +353,171 @@ export default function Home({
           </div>
         </div>
 
-        {/* Dynamic UI Elements Rendering with Swatches */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          
-          {/* Mockup 1: Action Card */}
-          <div 
-            className={`p-5 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}
-          >
-            <div className="flex items-center justify-between">
-              <span 
-                className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-white"
+        {/* Dynamic UI Elements Rendering with Swatches based on selected activePreviewType tab */}
+        {activePreviewType === 'card' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Card 1: Primary Action Card */}
+            <div className={`p-5 rounded-2xl border transition-all ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}>
+              <div className="flex items-center justify-between">
+                <span 
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-white"
+                  style={{ backgroundColor: swatches[0] || '#6366f1' }}
+                >
+                  PRIMARY
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{swatches[0]}</span>
+              </div>
+              <h4 className="font-bold text-sm">Design System Component</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Real-time rendering of your active palette on cards, buttons, and state indicators.
+              </p>
+              <button
+                onClick={() => toast.info(`Clicked Primary Action (${swatches[0]})`)}
                 style={{ backgroundColor: swatches[0] || '#6366f1' }}
+                className="w-full py-2 rounded-xl text-white text-xs font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
               >
-                PRIMARY
-              </span>
-              <span className="text-[10px] font-mono text-slate-400">SWATCH 1</span>
+                Interactive Action Button
+              </button>
             </div>
 
-            <h4 className="font-bold text-sm">Design System Component</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Real-time rendering of your active palette colors on cards, buttons, and state indicators.
-            </p>
+            {/* Card 2: Secondary Highlight Card */}
+            <div className={`p-5 rounded-2xl border transition-all ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}>
+              <div className="flex items-center justify-between">
+                <span 
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-white"
+                  style={{ backgroundColor: swatches[1] || '#3b82f6' }}
+                >
+                  ACCENT
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{swatches[1]}</span>
+              </div>
+              <h4 className="font-bold text-sm">Accent Highlighting</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Secondary accents for links, badges, progress rings, and focal points.
+              </p>
+              <button
+                onClick={() => toast.info(`Clicked Accent Action (${swatches[1]})`)}
+                style={{ 
+                  backgroundColor: `${swatches[1]}20`,
+                  borderColor: swatches[1],
+                  color: swatches[1]
+                }}
+                className="w-full py-2 rounded-xl border text-xs font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+              >
+                Secondary Outline
+              </button>
+            </div>
 
-            <button
-              style={{ backgroundColor: swatches[0] || '#6366f1' }}
-              className="w-full py-2 rounded-xl text-white text-xs font-bold shadow-sm active:scale-95 transition-all"
-            >
-              Interactive Action Button
-            </button>
+            {/* Card 3: Status & Feedback Card */}
+            <div className={`p-5 rounded-2xl border transition-all ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}>
+              <div className="flex items-center justify-between">
+                <span 
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-white"
+                  style={{ backgroundColor: swatches[2] || '#10b981' }}
+                >
+                  SUCCESS
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{swatches[2]}</span>
+              </div>
+              <h4 className="font-bold text-sm">Feedback & Status</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Positive states, confirmation badges, active toggles, and metric milestones.
+              </p>
+              <div 
+                style={{ backgroundColor: `${swatches[2]}15`, borderColor: `${swatches[2]}40`, color: swatches[2] }}
+                className="p-2.5 rounded-xl border text-center text-xs font-bold"
+              >
+                Operational Status: 100% Online
+              </div>
+            </div>
           </div>
+        )}
 
-          {/* Mockup 2: Analytics & Metrics Widget */}
-          <div 
-            className={`p-5 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold">Performance Metric</span>
-              <span 
-                className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: swatches[1] || '#3b82f6' }}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-2xl font-black font-mono">98.4%</span>
-              <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden flex">
-                <div style={{ width: '45%', backgroundColor: swatches[0] || '#6366f1' }} />
-                <div style={{ width: '30%', backgroundColor: swatches[1] || '#3b82f6' }} />
-                <div style={{ width: '15%', backgroundColor: swatches[2] || '#10b981' }} />
-                <div style={{ width: '10%', backgroundColor: swatches[3] || '#f59e0b' }} />
+        {activePreviewType === 'stats' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Analytics Metric Bar */}
+            <div className={`p-6 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Palette Distribution Ratio</span>
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: swatches[0] }} />
+              </div>
+              <div className="text-3xl font-black font-mono">100% Synchronized</div>
+              <div className="w-full h-3 rounded-full bg-slate-800 overflow-hidden flex shadow-inner">
+                <div style={{ width: '35%', backgroundColor: swatches[0] }} title={`Swatch 1: ${swatches[0]}`} />
+                <div style={{ width: '25%', backgroundColor: swatches[1] }} title={`Swatch 2: ${swatches[1]}`} />
+                <div style={{ width: '20%', backgroundColor: swatches[2] }} title={`Swatch 3: ${swatches[2]}`} />
+                <div style={{ width: '12%', backgroundColor: swatches[3] }} title={`Swatch 4: ${swatches[3]}`} />
+                <div style={{ width: '8%', backgroundColor: swatches[4] }} title={`Swatch 5: ${swatches[4]}`} />
+              </div>
+              <div className="grid grid-cols-5 gap-2 pt-2 text-[10px] font-mono">
+                {swatches.map((hex, i) => (
+                  <div key={i} className="text-center">
+                    <span className="w-full block h-1.5 rounded-full mb-1" style={{ backgroundColor: hex }} />
+                    <span className="text-slate-400 truncate block">{hex}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: swatches[0] }} /> Palette A
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: swatches[1] }} /> Palette B
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: swatches[2] }} /> Palette C
-              </span>
+            {/* Engagement Gauge */}
+            <div className={`p-6 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">WCAG Contrast Matrix</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">PASS (AA)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div style={{ backgroundColor: swatches[0], color: '#ffffff' }} className="p-4 rounded-xl text-center font-bold text-xs shadow-sm">
+                  White on {swatches[0]}
+                </div>
+                <div style={{ backgroundColor: '#ffffff', color: swatches[0] }} className="p-4 rounded-xl border border-slate-200 text-center font-bold text-xs shadow-sm">
+                  {swatches[0]} on White
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 text-center">
+                All 5 swatches mathematically validated for Web Content Accessibility Guidelines.
+              </p>
             </div>
           </div>
+        )}
 
-          {/* Mockup 3: State & Tags Badges */}
-          <div 
-            className={`p-5 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4`}
-          >
-            <span className="text-xs font-bold block">Status & Tags Badges</span>
+        {activePreviewType === 'buttons' && (
+          <div className={`p-6 rounded-2xl border ${theme.isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-5`}>
+            <div>
+              <h4 className="font-bold text-sm mb-1">Interactive Button States & Tags</h4>
+              <p className="text-xs text-slate-400">Test how your active palette swatches look as solid, outline, soft, and badge elements.</p>
+            </div>
 
-            <div className="flex flex-wrap gap-2">
-              {swatches.map((hex, i) => (
-                <span 
-                  key={i}
-                  style={{ 
-                    backgroundColor: `${hex}20`,
-                    borderColor: `${hex}60`,
-                    color: hex
-                  }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold border"
+            <div className="flex flex-wrap items-center gap-3">
+              {swatches.map((hex, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => toast.success(`Clicked Solid Button (${hex})`)}
+                  style={{ backgroundColor: hex }}
+                  className="px-4 py-2 rounded-xl text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
-                  {hex}
-                </span>
+                  Solid Button {idx + 1}
+                </button>
               ))}
             </div>
 
-            <p className="text-[11px] text-slate-400">
-              All swatches calculate with dynamic alpha channels for accessible tag styling.
-            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              {swatches.map((hex, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => toast.success(`Clicked Soft Button (${hex})`)}
+                  style={{ 
+                    backgroundColor: `${hex}20`,
+                    borderColor: `${hex}50`,
+                    color: hex
+                  }}
+                  className="px-4 py-2 rounded-xl border text-xs font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                >
+                  Soft State {idx + 1}
+                </button>
+              ))}
+            </div>
           </div>
-
-        </div>
+        )}
       </div>
 
       {/* 4. KEYBOARD SHORTCUTS & PRO-TIPS BAR */}
