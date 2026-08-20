@@ -512,6 +512,7 @@ export const DOCS_SECTIONS = {
         type: 'table',
         headers: ['Release', 'Highlights'],
         rows: [
+          ['v1.4.3', 'Official open-source launch with MIT License, community governance documentation, and security disclosure policy.'],
           ['v1.4.2', 'Enhanced About Krasola panel with 1-click diagnostic copying, tech stack architecture cards, creator suites inventory, and GitHub repository links.'],
           ['v1.4.1', 'Fixed Active Palette UI Preview Playground tab switching across UI Card, Metrics Bar, and Action states.'],
           ['v1.4.0', 'Home page overhaul with 3D isometric SVG geometry, 1-click palette randomizer, 6-suite launcher, and UI preview playground.'],

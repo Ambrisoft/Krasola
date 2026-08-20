@@ -18,9 +18,10 @@ out/
 *.env
 !.env.example
 
-# AI Agents & IDE Configurations
+# AI Agents, Internal Documentation & IDE Configurations
 .agents/
 .gemini/
+docs/
 .vscode/
 .idea/
 .project

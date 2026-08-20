@@ -5,6 +5,22 @@
 
 export const KRASOLA_CHANGELOG = [
   {
+    version: '1.4.3',
+    date: '2026-08-20',
+    type: 'patch',
+    title: 'Open-Source Governance & Community Readiness',
+    commit: 'HEAD',
+    summary: 'Official open-source release with MIT License, comprehensive documentation, security disclosure policy, and GitHub community health templates.',
+    changes: {
+      added: [
+        'Added MIT License, CONTRIBUTING.md, and Contributor Covenant CODE_OF_CONDUCT.md.',
+        'Configured responsible vulnerability disclosure policy routed to security.krasola@ambrisoft.com.',
+        'Added GitHub issue and PR templates for structured community contributions.',
+        'Hardened repository .gitignore to keep internal research docs and agent configs private on local disk.'
+      ]
+    }
+  },
+  {
     version: '1.4.2',
     date: '2026-08-18',
     type: 'patch',

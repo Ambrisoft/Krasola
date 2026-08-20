@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.3] - 2026-08-20
+
+### Added
+- **Open-Source Governance & Community Readiness**:
+  - Added official **MIT License** (`LICENSE`) granting public use and contribution.
+  - Added comprehensive public **`README.md`** with visual architecture badges and studio feature tour.
+  - Added **`CONTRIBUTING.md`** guide with Conventional Commits specifications.
+  - Added **`SECURITY.md`** vulnerability reporting policy routed to `security.krasola@ambrisoft.com`.
+  - Added Contributor Covenant v2.1 **`CODE_OF_CONDUCT.md`**.
+  - Added structured GitHub issue templates for bug reports (`bug_report.md`), feature requests (`feature_request.md`), and pull requests (`PULL_REQUEST_TEMPLATE.md`).
+- **Repository Privacy & Cleanliness Hardening**:
+  - Hardened `.gitignore` to preserve internal agent prompts (`.agents/`), IDE configs, and research docs (`docs/`) privately on local disk while keeping public repository lean.
+
+---
+
 ## [1.4.2] - 2026-08-18
 
 ### Added

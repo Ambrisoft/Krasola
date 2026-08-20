@@ -14,7 +14,7 @@
 **An ultra-fast, client-first design studio and prototyping workspace.**  
 Generate harmonious color schemes, procedural SVG patterns, customize 1,000+ vector icons, process canvas photos, and sync assets directly in browser sandboxes.
 
-[Explore Live Workspace](https://krasola.ambrisoft.com) · [Documentation](docs/) · [Report Bug](.github/ISSUE_TEMPLATE/bug_report.md) · [Request Feature](.github/ISSUE_TEMPLATE/feature_request.md)
+[Explore Live Workspace](https://krasola.ambrisoft.com) · [Changelog](CHANGELOG.md) · [Report Bug](.github/ISSUE_TEMPLATE/bug_report.md) · [Request Feature](.github/ISSUE_TEMPLATE/feature_request.md)
 
 </div>
 
