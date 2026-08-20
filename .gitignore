@@ -16,8 +16,11 @@ out/
 .env.test.local
 .env.production.local
 *.env
+!.env.example
 
-# IDE / Editor configurations
+# AI Agents & IDE Configurations
+.agents/
+.gemini/
 .vscode/
 .idea/
 .project
@@ -34,6 +37,8 @@ worspace save/
 worspace\ save/
 tmp/
 temp/
+*.bak
+*.tmp
 *.log
 npm-debug.log*
 yarn-debug.log*
